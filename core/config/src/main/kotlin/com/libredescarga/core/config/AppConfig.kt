@@ -43,8 +43,8 @@ object AppConfig {
     // Aviso legal
     // ---------------------------------------------------------------------
 
-    /** Correo para reclamos de derechos de autor (distinto del correo de donaciones). */
-    const val LEGAL_CONTACT_EMAIL = "legal@libredescarga.example"
+    /** Correo para reclamos de derechos de autor; se muestra en los términos y en el aviso legal. */
+    const val LEGAL_CONTACT_EMAIL = "w_alexis0312@hotmail.com"
 
     /** Súbelo cuando cambien los términos: se volverá a pedir la aceptación. */
     const val TERMS_VERSION = 1
