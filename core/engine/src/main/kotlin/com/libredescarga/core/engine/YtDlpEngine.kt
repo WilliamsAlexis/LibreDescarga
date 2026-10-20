@@ -1,6 +1,7 @@
 package com.libredescarga.core.engine
 
 import android.content.Context
+import android.os.Build
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.SearchProvider
 import com.yausername.ffmpeg.FFmpeg
@@ -18,6 +19,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
+import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,8 +48,10 @@ class YtDlpEngine @Inject constructor(
             if (initialized) return
             withContext(Dispatchers.IO) {
                 try {
+                    resetEngineFilesIfNewVersion()
                     YoutubeDL.init(context)
                     FFmpeg.init(context)
+                    markEngineFilesValid()
                 } catch (error: YoutubeDLException) {
                     throw MediaError.Unknown(error.message)
                 } catch (error: LinkageError) {
@@ -57,6 +61,28 @@ class YtDlpEngine @Inject constructor(
             }
             initialized = true
         }
+    }
+
+    /**
+     * Si la app cambió de versión desde la última extracción correcta, se borran los archivos del motor
+     * (solo su carpeta interna) para extraerlos de nuevo. Repara instalaciones que quedaron con Python o
+     * yt-dlp a medias o corruptos (error "zlib.error ... truncated stream") sin pedir borrar los datos de la app.
+     */
+    private fun resetEngineFilesIfNewVersion() {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (prefs.getLong(KEY_ENGINE_FILES_VERSION, -1L) == appVersionCode()) return
+        File(context.noBackupFilesDir, ENGINE_DIR).deleteRecursively()
+    }
+
+    private fun markEngineFilesValid() {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putLong(KEY_ENGINE_FILES_VERSION, appVersionCode()).apply()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun appVersionCode(): Long {
+        val info = context.packageManager.getPackageInfo(context.packageName, 0)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.longVersionCode else info.versionCode.toLong()
     }
 
     /** Analiza un enlace sin descargar nada. Las listas se devuelven planas (rápido). */
@@ -132,6 +158,8 @@ class YtDlpEngine @Inject constructor(
     private companion object {
         const val PREFS_NAME = "engine_prefs"
         const val KEY_LAST_UPDATE_CHECK = "last_update_check"
+        const val KEY_ENGINE_FILES_VERSION = "engine_files_version"
+        const val ENGINE_DIR = "youtubedl-android"
         const val WEEK_MS = 7L * 24 * 60 * 60 * 1000
     }
 
@@ -169,6 +197,7 @@ class YtDlpEngine @Inject constructor(
         YoutubeDL.destroyProcessById(processId)
         throw CancellationException("Descarga interrumpida")
     } catch (error: YoutubeDLException) {
+        android.util.Log.w("YtDlpEngine", "yt-dlp falló: ${error.message}")
         throw EngineErrorMapper.map(error.message)
     }
 }

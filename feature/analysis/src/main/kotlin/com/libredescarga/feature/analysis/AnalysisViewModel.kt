@@ -1,5 +1,6 @@
 package com.libredescarga.feature.analysis
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.libredescarga.core.domain.repository.PageImageResolver
@@ -25,7 +26,9 @@ import com.libredescarga.core.model.VideoContainer
 import com.libredescarga.core.model.VideoOption
 import com.libredescarga.core.model.VideoQuality
 import com.libredescarga.core.model.VideoSelection
+import com.libredescarga.core.security.DomainMatcher
 import com.libredescarga.core.security.FileNameSanitizer
+import com.libredescarga.core.security.UrlValidator
 import com.libredescarga.core.ui.parseTimeInput
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -106,7 +109,10 @@ class AnalysisViewModel @AssistedInject constructor(
     // Si el enlace no tiene video ni audio pero la página tiene una imagen principal, se descarga esa imagen.
     // Si no, se muestra el error original.
     private suspend fun errorOrImage(error: MediaError): AnalysisUiState {
-        if (error is MediaError.Unsupported || error is MediaError.Unknown) {
+        Log.w(TAG, "No se pudo analizar el enlace", error)
+        // Los sitios de video (YouTube...) nunca se resuelven con su miniatura: se muestra el error real.
+        val isVideoSite = UrlValidator.hostOf(url)?.let { DomainMatcher.matches(it, VIDEO_SITES) != null } == true
+        if (!isVideoSite && (error is MediaError.Unsupported || error is MediaError.Unknown)) {
             val image = runCatching { pageImages.mainImageOf(url) }.getOrNull()
             val request = image?.let { ImageDownloads.request(it, null) }
             if (request != null) {
@@ -320,7 +326,9 @@ class AnalysisViewModel @AssistedInject constructor(
     }
 
     companion object {
+        private const val TAG = "AnalysisViewModel"
         private const val DEFAULT_MAX_HEIGHT = 1080
+        private val VIDEO_SITES = listOf("youtube.com", "youtu.be", "youtube-nocookie.com")
 
         internal fun initialSingle(info: MediaInfo, settings: UserSettings): AnalysisUiState.Single {
             val maxHeight = settings.defaultVideoQuality.maxHeight ?: DEFAULT_MAX_HEIGHT

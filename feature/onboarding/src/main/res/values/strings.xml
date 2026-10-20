@@ -27,7 +27,7 @@
     <string name="onboarding_permission_media_title">Archivos</string>
     <string name="onboarding_permission_media_body">Para guardar y mostrar los videos, la música y las imágenes que descargas. Es imprescindible.</string>
     <string name="onboarding_permission_overlay_title">Mostrar sobre otras apps</string>
-    <string name="onboarding_permission_overlay_body">Para abrir la ventana de descarga encima de YouTube, tu navegador u otras apps cuando compartes un enlace.</string>
+    <string name="onboarding_permission_overlay_body">Para abrir la ventana de descarga encima de YouTube, tu navegador u otras apps cuando compartes un enlace. Es opcional.</string>
     <string name="onboarding_permission_internet_title">Internet</string>
     <string name="onboarding_permission_internet_body">Para analizar enlaces y descargar. Se concede automáticamente.</string>
     <string name="onboarding_permission_updates_title">Instalar actualizaciones</string>

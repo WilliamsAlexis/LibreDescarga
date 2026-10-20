@@ -37,3 +37,10 @@
 -dontwarn com.google.errorprone.annotations.**
 -dontwarn javax.annotation.**
 -dontwarn org.joda.time.**
+
+# Descompresión de Python/yt-dlp/FFmpeg al iniciar el motor: commons-compress registra sus clases por reflexión
+# (ExtraFieldUtils) y R8 la rompía en la versión release ("Ocurrió un error: ih1").
+-keep class org.apache.commons.compress.** { *; }
+-keep class org.apache.commons.io.** { *; }
+-dontwarn org.apache.commons.compress.**
+-dontwarn org.apache.commons.io.**

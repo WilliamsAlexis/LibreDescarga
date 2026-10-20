@@ -20,8 +20,8 @@ enum class AppPermission(val required: Boolean = true) {
     /** Avisos de progreso de las descargas (Android 13+). Opcional. */
     NOTIFICATIONS(required = false),
 
-    /** Mostrar la ventana de descarga sobre otras apps. */
-    OVERLAY,
+    /** Mostrar la ventana de descarga sobre otras apps. Opcional: Android puede bloquearlo en apps instaladas desde un APK. */
+    OVERLAY(required = false),
 }
 
 internal object AppPermissions {

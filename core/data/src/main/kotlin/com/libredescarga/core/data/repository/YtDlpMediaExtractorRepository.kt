@@ -30,6 +30,7 @@ internal class YtDlpMediaExtractorRepository @Inject constructor(
     } catch (error: MediaError) {
         throw error
     } catch (error: Exception) {
+        android.util.Log.e("MediaExtractor", "Fallo inesperado al analizar", error)
         throw MediaError.Unknown(error.message)
     }
 }
