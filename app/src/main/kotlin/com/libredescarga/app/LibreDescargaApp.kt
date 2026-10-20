@@ -6,6 +6,8 @@ import androidx.work.Configuration
 import com.libredescarga.core.downloader.DownloadQueueManager
 import com.libredescarga.core.engine.YtDlpEngine
 import dagger.hilt.android.HiltAndroidApp
+import android.util.Log
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,7 +26,12 @@ class LibreDescargaApp : Application(), Configuration.Provider {
     @Inject
     lateinit var downloadQueue: DownloadQueueManager
 
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Una excepción suelta en segundo plano (cola de descargas, motor...) no debe cerrar la app.
+    private val appScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, error ->
+            Log.e(TAG, "Error en segundo plano", error)
+        },
+    )
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -41,5 +48,9 @@ class LibreDescargaApp : Application(), Configuration.Provider {
         }
         // Retoma la cola de descargas (tras cerrar la app o reiniciar el teléfono).
         downloadQueue.start(appScope)
+    }
+
+    private companion object {
+        const val TAG = "LibreDescargaApp"
     }
 }

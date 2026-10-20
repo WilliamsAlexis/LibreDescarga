@@ -1,4 +1,4 @@
-import java.util.Properties
+﻿import java.util.Properties
 
 plugins {
     alias(libs.plugins.libredescarga.android.application)
@@ -8,12 +8,12 @@ plugins {
 }
 
 // ---------------------------------------------------------------------------
-// Identidad de la app: el paquete se cambia SOLO aquí.
-// (El nombre visible se cambia en src/main/res/values/strings.xml → app_name.)
+// Identidad de la app: el paquete se cambia SOLO aquÃ­.
+// (El nombre visible se cambia en src/main/res/values/strings.xml â†’ app_name.)
 // ---------------------------------------------------------------------------
 val appPackage = "com.libredescarga.app"
-val appVersionCode = 1
-val appVersionName = "1.0.0"
+val appVersionCode = 2
+val appVersionName = "1.0.1"
 
 // Datos de firma, fuera del control de versiones (ver keystore.properties.example).
 val keystoreProperties = Properties().apply {
@@ -64,14 +64,14 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-        // youtubedl-android ejecuta Python y FFmpeg desde las librerías nativas
-        // extraídas: deben instalarse descomprimidas en el teléfono.
+        // youtubedl-android ejecuta Python y FFmpeg desde las librerÃ­as nativas
+        // extraÃ­das: deben instalarse descomprimidas en el telÃ©fono.
         jniLibs {
             useLegacyPackaging = true
         }
     }
 
-    // Un APK por arquitectura (más ligero) y uno universal para quien no sepa cuál elegir.
+    // Un APK por arquitectura (mÃ¡s ligero) y uno universal para quien no sepa cuÃ¡l elegir.
     splits {
         abi {
             isEnable = true
@@ -116,7 +116,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.navigationSuite)
     implementation(libs.androidx.work.runtime)
-    // Alinea la versión que traen WorkManager y las librerías de pruebas.
+    // Alinea la versiÃ³n que traen WorkManager y las librerÃ­as de pruebas.
     implementation(libs.androidx.concurrent.futures.ktx)
     implementation(libs.androidx.hilt.work)
     implementation(libs.kotlinx.coroutines.android)

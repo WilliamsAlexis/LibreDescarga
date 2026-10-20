@@ -50,6 +50,9 @@ class YtDlpEngine @Inject constructor(
                     FFmpeg.init(context)
                 } catch (error: YoutubeDLException) {
                     throw MediaError.Unknown(error.message)
+                } catch (error: LinkageError) {
+                    // Librerías nativas que no cargan en este teléfono: error normal, no cierre de la app.
+                    throw MediaError.Unknown(error.message)
                 }
             }
             initialized = true

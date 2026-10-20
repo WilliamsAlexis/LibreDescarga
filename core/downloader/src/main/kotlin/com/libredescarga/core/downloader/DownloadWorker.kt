@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.libredescarga.core.database.dao.DownloadDao
 import com.libredescarga.core.database.mapper.toRequest
@@ -69,7 +70,7 @@ class DownloadWorker @AssistedInject constructor(
         }
 
         dao.updateStatus(downloadId, DownloadStatus.RUNNING.name, null)
-        setForeground(notifier.foregroundInfo(downloadId, request.title, percent = null))
+        showForeground(notifier.foregroundInfo(downloadId, request.title, percent = null))
 
         val workDir = storage.workDirFor(downloadId)
         val tuning = DownloadTuning(
@@ -123,8 +124,24 @@ class DownloadWorker @AssistedInject constructor(
             } else {
                 fail(downloadId, request.title, error)
             }
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
+            // También errores nativos (librerías de Python/FFmpeg que no cargan, poca memoria...):
+            // en algunos teléfonos escaparían del worker y cerrarían toda la app.
             fail(downloadId, request.title, error)
+        }
+    }
+
+    /**
+     * Muestra la notificación del servicio en primer plano. Algunos fabricantes (Motorola, Xiaomi...)
+     * o Android 12+ pueden negarla; la descarga sigue igual, solo sin la notificación fija.
+     */
+    private suspend fun showForeground(info: ForegroundInfo) {
+        try {
+            setForeground(info)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
+            // IllegalStateException / SecurityException: no es un error de la descarga.
         }
     }
 
@@ -169,7 +186,7 @@ class DownloadWorker @AssistedInject constructor(
                         totalBytes = update.totalBytes,
                         downloadedBytes = update.downloadedBytes,
                     )
-                    setForeground(
+                    showForeground(
                         notifier.foregroundInfo(downloadId, request.title, update.percent, update.speedBytesPerSecond),
                     )
                 }

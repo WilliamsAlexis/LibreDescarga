@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Navegación de la bienvenida -->
     <string name="onboarding_back">Atrás</string>
@@ -21,11 +21,13 @@
 
     <!-- Paso 2: permisos -->
     <string name="onboarding_permissions_title">Permisos que usamos</string>
-    <string name="onboarding_permissions_body">Solo pedimos lo imprescindible. Puedes cambiarlos cuando quieras en los ajustes de Android.</string>
+    <string name="onboarding_permissions_body">Solo pedimos lo imprescindible para descargar. Puedes cambiarlos cuando quieras en los ajustes de Android.</string>
     <string name="onboarding_permission_notifications_title">Notificaciones</string>
-    <string name="onboarding_permission_notifications_body">Para mostrarte el progreso de las descargas y los controles de la música.</string>
-    <string name="onboarding_permission_media_title">Videos y música del teléfono</string>
-    <string name="onboarding_permission_media_body">Para mostrar en la biblioteca los archivos que ya tienes. Es opcional.</string>
+    <string name="onboarding_permission_notifications_body">Para mostrarte el progreso de las descargas y los controles de la música. Es opcional.</string>
+    <string name="onboarding_permission_media_title">Archivos</string>
+    <string name="onboarding_permission_media_body">Para guardar y mostrar los videos, la música y las imágenes que descargas. Es imprescindible.</string>
+    <string name="onboarding_permission_overlay_title">Mostrar sobre otras apps</string>
+    <string name="onboarding_permission_overlay_body">Para abrir la ventana de descarga encima de YouTube, tu navegador u otras apps cuando compartes un enlace.</string>
     <string name="onboarding_permission_internet_title">Internet</string>
     <string name="onboarding_permission_internet_body">Para analizar enlaces y descargar. Se concede automáticamente.</string>
     <string name="onboarding_permission_updates_title">Instalar actualizaciones</string>
@@ -47,4 +49,10 @@
     <string name="onboarding_privacy_body">%1$s no recoge, no envía y no vende datos personales. Todo se guarda en tu teléfono. Las donaciones se procesan directamente en PayPal, fuera de la app.</string>
     <string name="onboarding_terms_accept">He leído y acepto los términos de uso</string>
     <string name="onboarding_terms_required">Debes aceptar los términos para continuar.</string>
+
+    <!-- Pantalla de permisos obligatorios -->
+    <string name="permissions_required_title">Faltan permisos</string>
+    <string name="permissions_required_body">LibreDescarga necesita estos permisos para descargar y guardar tus archivos. Sin ellos la app no puede continuar.</string>
+    <string name="permissions_required_grant">Conceder permisos</string>
+    <string name="permissions_required_settings_hint">Si no aparece el cuadro de permiso, actívalo en los ajustes de Android y vuelve a la app.</string>
 </resources>

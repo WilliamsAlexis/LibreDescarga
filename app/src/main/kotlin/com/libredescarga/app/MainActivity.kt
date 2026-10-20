@@ -22,6 +22,7 @@ import com.libredescarga.core.config.AppConfig
 import com.libredescarga.core.designsystem.theme.LibreTheme
 import com.libredescarga.core.domain.settings.DonationPrompt
 import com.libredescarga.core.designsystem.theme.isDarkTheme
+import com.libredescarga.feature.onboarding.permission.RequiredPermissionsGate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -78,12 +79,15 @@ class MainActivity : AppCompatActivity() {
                     dynamicColor = state.settings.useDynamicColor,
                     accent = state.settings.accentColor,
                 ) {
-                    LibreDescargaAppUi(
-                        showOnboarding = state.showOnboarding,
-                        hasPendingLink = pendingLink != null,
-                        showDonationPrompt = DonationPrompt.shouldShow(state.settings, AppConfig.DONATION_PROMPT_THRESHOLD),
-                        onDonationPromptAnswered = viewModel::onDonationPromptAnswered,
-                    )
+                    // Durante la bienvenida los permisos se piden en su paso; después son obligatorios.
+                    RequiredPermissionsGate(enabled = !state.showOnboarding) {
+                        LibreDescargaAppUi(
+                            showOnboarding = state.showOnboarding,
+                            hasPendingLink = pendingLink != null,
+                            showDonationPrompt = DonationPrompt.shouldShow(state.settings, AppConfig.DONATION_PROMPT_THRESHOLD),
+                            onDonationPromptAnswered = viewModel::onDonationPromptAnswered,
+                        )
+                    }
                 }
             }
         }

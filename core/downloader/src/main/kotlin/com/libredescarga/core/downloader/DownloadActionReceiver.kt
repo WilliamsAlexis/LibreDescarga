@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,6 +28,10 @@ class DownloadActionReceiver : BroadcastReceiver() {
                     ACTION_CANCEL -> controller.cancel(downloadId)
                     ACTION_RETRY -> controller.retry(downloadId)
                 }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: Exception) {
+                // Un botón de la notificación nunca debe cerrar la app.
             } finally {
                 pending.finish()
             }

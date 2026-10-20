@@ -79,6 +79,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Gavel
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Movie
@@ -199,6 +200,7 @@ object LibreIcons {
     // Permisos y estado
     val Notifications = Icons.Rounded.Notifications
     val Media = Icons.Rounded.PermMedia
+    val Overlay = Icons.Rounded.Layers
     val Internet = Icons.Rounded.Public
     val SystemUpdate = Icons.Rounded.SystemUpdate
     val Granted = Icons.Rounded.CheckCircle

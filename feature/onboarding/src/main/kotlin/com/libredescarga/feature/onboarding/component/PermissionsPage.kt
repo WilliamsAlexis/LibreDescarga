@@ -1,11 +1,5 @@
 package com.libredescarga.feature.onboarding.component
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,44 +15,23 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import com.libredescarga.core.designsystem.icon.LibreIcons
 import com.libredescarga.feature.onboarding.R
+import com.libredescarga.feature.onboarding.permission.AppPermission
+import com.libredescarga.feature.onboarding.permission.PermissionState
+import com.libredescarga.feature.onboarding.permission.rememberPermissionState
 
-private enum class PermissionStatus { GRANTED, REQUESTABLE, AUTOMATIC, ON_DEMAND }
+internal enum class PermissionStatus { GRANTED, REQUESTABLE, AUTOMATIC, ON_DEMAND }
 
-/** Paso 2: permisos que usa la app, explicados. Ninguno es obligatorio para continuar. */
+/** Paso 2: permisos que usa la app, explicados. Los de archivos, notificaciones y "sobre otras apps" se piden aquí. */
 @Composable
 internal fun PermissionsPage(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    var notificationsGranted by remember { mutableStateOf(context.hasNotificationPermission()) }
-    var mediaGranted by remember { mutableStateOf(context.hasMediaPermission()) }
-
-    // Si el usuario vuelve desde los ajustes de Android, se refresca el estado.
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        notificationsGranted = context.hasNotificationPermission()
-        mediaGranted = context.hasMediaPermission()
-    }
-
-    val notificationLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { granted -> notificationsGranted = granted }
-
-    val mediaLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-    ) { mediaGranted = context.hasMediaPermission() }
+    val state = rememberPermissionState()
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -73,24 +46,9 @@ internal fun PermissionsPage(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        PermissionCard(
-            icon = LibreIcons.Notifications,
-            title = stringResource(R.string.onboarding_permission_notifications_title),
-            description = stringResource(R.string.onboarding_permission_notifications_body),
-            status = if (notificationsGranted) PermissionStatus.GRANTED else PermissionStatus.REQUESTABLE,
-            onRequest = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            },
-        )
-        PermissionCard(
-            icon = LibreIcons.Media,
-            title = stringResource(R.string.onboarding_permission_media_title),
-            description = stringResource(R.string.onboarding_permission_media_body),
-            status = if (mediaGranted) PermissionStatus.GRANTED else PermissionStatus.REQUESTABLE,
-            onRequest = { mediaLauncher.launch(mediaPermissions()) },
-        )
+        AppPermission.entries.forEach { permission ->
+            AppPermissionCard(permission = permission, state = state)
+        }
         PermissionCard(
             icon = LibreIcons.Internet,
             title = stringResource(R.string.onboarding_permission_internet_title),
@@ -106,8 +64,37 @@ internal fun PermissionsPage(modifier: Modifier = Modifier) {
     }
 }
 
+/** Tarjeta de uno de los permisos necesarios, con su botón para pedirlo. */
 @Composable
-private fun PermissionCard(
+internal fun AppPermissionCard(permission: AppPermission, state: PermissionState) {
+    val (icon, title, description) = when (permission) {
+        AppPermission.STORAGE -> Triple(
+            LibreIcons.Media,
+            stringResource(R.string.onboarding_permission_media_title),
+            stringResource(R.string.onboarding_permission_media_body),
+        )
+        AppPermission.NOTIFICATIONS -> Triple(
+            LibreIcons.Notifications,
+            stringResource(R.string.onboarding_permission_notifications_title),
+            stringResource(R.string.onboarding_permission_notifications_body),
+        )
+        AppPermission.OVERLAY -> Triple(
+            LibreIcons.Overlay,
+            stringResource(R.string.onboarding_permission_overlay_title),
+            stringResource(R.string.onboarding_permission_overlay_body),
+        )
+    }
+    PermissionCard(
+        icon = icon,
+        title = title,
+        description = description,
+        status = if (permission in state.missing) PermissionStatus.REQUESTABLE else PermissionStatus.GRANTED,
+        onRequest = { state.request(permission) },
+    )
+}
+
+@Composable
+internal fun PermissionCard(
     icon: ImageVector,
     title: String,
     description: String,
@@ -186,20 +173,3 @@ private fun StatusText(text: String) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-private fun Context.isGranted(permission: String): Boolean =
-    ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-
-/** Antes de Android 13 las notificaciones no necesitan permiso. */
-private fun Context.hasNotificationPermission(): Boolean =
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        isGranted(Manifest.permission.POST_NOTIFICATIONS)
-
-private fun mediaPermissions(): Array<String> =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO)
-    } else {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
-
-private fun Context.hasMediaPermission(): Boolean = mediaPermissions().all { isGranted(it) }
