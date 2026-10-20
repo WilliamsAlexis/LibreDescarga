@@ -94,6 +94,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun LibraryScreen(
     onOpenVideo: (LibraryMedia) -> Unit,
+    onOpenDuplicates: () -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -148,6 +149,7 @@ internal fun LibraryScreen(
         onQueryChange = viewModel::onQueryChange,
         onSortSelected = viewModel::onSortSelected,
         onToggleView = viewModel::onToggleView,
+        onOpenDuplicates = onOpenDuplicates,
         onOpen = viewModel::onOpen,
         onCloseCollection = viewModel::onCloseCollection,
         onMediaClick = viewModel::onMediaClick,
@@ -196,6 +198,7 @@ internal fun LibraryContent(
     onQueryChange: (String) -> Unit,
     onSortSelected: (LibrarySort) -> Unit,
     onToggleView: () -> Unit,
+    onOpenDuplicates: () -> Unit = {},
     onOpen: (OpenCollection) -> Unit,
     onCloseCollection: () -> Unit,
     onMediaClick: (LibraryMedia, List<LibraryMedia>) -> Unit,
@@ -247,6 +250,11 @@ internal fun LibraryContent(
                         }
                     },
                     actions = {
+                        if (!inCollection) {
+                            IconButton(onClick = onOpenDuplicates) {
+                                Icon(LibreIcons.Copy, contentDescription = stringResource(R.string.duplicates_open))
+                            }
+                        }
                         IconButton(onClick = { onSearchActiveChange(true) }) {
                             Icon(LibreIcons.Search, contentDescription = stringResource(R.string.library_search))
                         }

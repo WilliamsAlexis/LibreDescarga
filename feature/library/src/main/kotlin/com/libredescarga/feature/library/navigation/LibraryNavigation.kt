@@ -9,9 +9,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object LibraryRoute
 
-/** @param onOpenVideo abre el reproductor de video (lo resuelve :app). */
-fun NavGraphBuilder.libraryScreen(onOpenVideo: (LibraryMedia) -> Unit) {
+/** @param onOpenVideo abre el reproductor de video; @param onOpenDuplicates abre "Archivos duplicados" (los resuelve :app). */
+fun NavGraphBuilder.libraryScreen(onOpenVideo: (LibraryMedia) -> Unit, onOpenDuplicates: () -> Unit = {}) {
     composable<LibraryRoute> {
-        LibraryScreen(onOpenVideo = onOpenVideo)
+        LibraryScreen(onOpenVideo = onOpenVideo, onOpenDuplicates = onOpenDuplicates)
     }
 }

@@ -62,7 +62,13 @@ fun LocalMediaThumbnail(
                 modifier = Modifier.fillMaxSize(),
             )
         } else {
-            PlaceholderIcon(if (kind == MediaKind.VIDEO) LibreIcons.Library else LibreIcons.Music)
+            PlaceholderIcon(
+                when (kind) {
+                    MediaKind.VIDEO -> LibreIcons.Library
+                    MediaKind.AUDIO -> LibreIcons.Music
+                    MediaKind.IMAGE -> LibreIcons.Media
+                },
+            )
         }
         DurationBadge(durationMs?.div(1000))
     }

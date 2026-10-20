@@ -1,5 +1,6 @@
 package com.libredescarga.core.domain.repository
 
+import com.libredescarga.core.model.DuplicateScanState
 import com.libredescarga.core.model.FileOperationResult
 import com.libredescarga.core.model.LibraryMedia
 import com.libredescarga.core.model.PlaylistItem
@@ -20,6 +21,11 @@ interface LibraryRepository {
 
     /** Mueve a otra carpeta pública, por ejemplo "Music/LibreDescarga". */
     suspend fun move(uri: String, folder: String): FileOperationResult
+}
+
+/** Busca archivos repetidos en el teléfono. Solo lee; borrar es decisión del usuario (ver [LibraryRepository.delete]). */
+interface DuplicateRepository {
+    fun scan(): Flow<DuplicateScanState>
 }
 
 interface PlaylistRepository {

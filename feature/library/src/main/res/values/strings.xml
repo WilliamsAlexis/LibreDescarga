@@ -87,4 +87,29 @@
     <string name="library_message_vault_locked">Abre y desbloquea la carpeta privada primero (pestaña Privado)</string>
     <string name="library_message_vault_failed">No se pudo copiar a la carpeta privada. No se borró nada.</string>
     <string name="library_message_vault_original_kept">Copiado a la carpeta privada, pero el original sigue en la galería</string>
+
+    <!-- Archivos duplicados -->
+    <string name="duplicates_open">Archivos duplicados</string>
+    <string name="duplicates_title">Archivos duplicados</string>
+    <string name="duplicates_rescan">Buscar de nuevo</string>
+    <string name="duplicates_scanning">Buscando archivos repetidos…</string>
+    <string name="duplicates_scanning_progress">Comparando %1$d de %2$d</string>
+    <string name="duplicates_summary">%1$d grupos de duplicados · puedes liberar %2$s</string>
+    <string name="duplicates_hint">Marca las copias que quieras eliminar del teléfono. Siempre se conserva al menos una de cada grupo, y nada se borra hasta que lo confirmes.</string>
+    <string name="duplicates_filter_all">Todo</string>
+    <string name="duplicates_filter_videos">Videos</string>
+    <string name="duplicates_filter_music">Música</string>
+    <string name="duplicates_filter_images">Imágenes</string>
+    <string name="duplicates_kind_video">Video</string>
+    <string name="duplicates_kind_audio">Música</string>
+    <string name="duplicates_kind_image">Imagen</string>
+    <string name="duplicates_group_title">%1$s · %2$s · %3$d copias</string>
+    <string name="duplicates_delete_selected">Eliminar %1$d archivos (%2$s)</string>
+    <string name="duplicates_confirm_title">¿Eliminar archivos duplicados?</string>
+    <string name="duplicates_confirm_message">Se eliminarán %1$d archivos del teléfono (%2$s). Esta acción no se puede deshacer.</string>
+    <string name="duplicates_empty_title">No hay duplicados</string>
+    <string name="duplicates_empty_message">No encontramos videos, música ni imágenes repetidos en tu teléfono.</string>
+    <string name="duplicates_deleted">Duplicados eliminados</string>
+    <string name="duplicates_delete_failed">No se pudieron eliminar los archivos</string>
+    <string name="duplicates_scan_failed">No se pudo buscar duplicados</string>
 </resources>

@@ -6,6 +6,7 @@ import com.libredescarga.core.data.repository.DeviceCacheRepository
 import com.libredescarga.core.data.repository.YtDlpEngineRepository
 import com.libredescarga.core.data.repository.DeviceStorageRepository
 import com.libredescarga.core.data.repository.InMemoryIncomingLinkRepository
+import com.libredescarga.core.data.repository.MediaStoreDuplicateRepository
 import com.libredescarga.core.data.repository.MediaStoreLibraryRepository
 import com.libredescarga.core.data.repository.OfflineBookmarkRepository
 import com.libredescarga.core.data.repository.OfflineBrowserHistoryRepository
@@ -21,6 +22,7 @@ import com.libredescarga.core.domain.repository.PageImageResolver
 import com.libredescarga.core.domain.repository.RemoteFileSizeProbe
 import com.libredescarga.core.downloader.ImageFetcher
 import com.libredescarga.core.domain.repository.FavoritesRepository
+import com.libredescarga.core.domain.repository.DuplicateRepository
 import com.libredescarga.core.domain.repository.LibraryRepository
 import com.libredescarga.core.domain.repository.PlaybackPositionRepository
 import com.libredescarga.core.domain.repository.PlaylistRepository
@@ -103,6 +105,10 @@ internal abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindLibraryRepository(impl: MediaStoreLibraryRepository): LibraryRepository
+
+    // Búsqueda de archivos duplicados (solo lectura).
+    @Binds
+    abstract fun bindDuplicateRepository(impl: MediaStoreDuplicateRepository): DuplicateRepository
 
     // Listas de reproducción.
     @Binds

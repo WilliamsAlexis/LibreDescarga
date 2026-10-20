@@ -7,11 +7,13 @@ import com.libredescarga.core.database.entity.FavoriteEntity
 import com.libredescarga.core.database.entity.PlaybackPositionEntity
 import com.libredescarga.core.database.entity.PlaylistEntity
 import com.libredescarga.core.database.entity.PlaylistItemEntity
+import com.libredescarga.core.domain.repository.DuplicateRepository
 import com.libredescarga.core.domain.repository.FavoritesRepository
 import com.libredescarga.core.domain.repository.LibraryRepository
 import com.libredescarga.core.domain.repository.PlaybackPositionRepository
 import com.libredescarga.core.domain.repository.PlaylistRepository
 import com.libredescarga.core.domain.usecase.ResumePositionPolicy
+import com.libredescarga.core.media.DuplicateScanner
 import com.libredescarga.core.media.MediaFileOperations
 import com.libredescarga.core.media.MediaStoreScanner
 import com.libredescarga.core.model.FileOperationResult
@@ -48,6 +50,14 @@ internal class MediaStoreLibraryRepository @Inject constructor(
     // Mueve un archivo a otra carpeta y actualiza la lista si salió bien.
     override suspend fun move(uri: String, folder: String): FileOperationResult =
         operations.move(uri, folder).also { if (it == FileOperationResult.Success) scanner.refresh() }
+}
+
+/** Detección de duplicados por contenido (tamaño + SHA-256). Solo lee; no borra nada. */
+internal class MediaStoreDuplicateRepository @Inject constructor(
+    private val scanner: DuplicateScanner,
+) : DuplicateRepository {
+
+    override fun scan() = scanner.scan()
 }
 
 /** Listas de reproducción creadas por el usuario; se guardan solo en el teléfono. */

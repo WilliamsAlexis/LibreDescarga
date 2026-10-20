@@ -10,6 +10,8 @@ import com.libredescarga.feature.browser.navigation.browserScreen
 import com.libredescarga.feature.downloads.navigation.downloadsScreen
 import com.libredescarga.feature.home.navigation.HomeRoute
 import com.libredescarga.feature.home.navigation.homeScreen
+import com.libredescarga.feature.library.navigation.DuplicatesRoute
+import com.libredescarga.feature.library.navigation.duplicatesScreen
 import com.libredescarga.feature.library.navigation.libraryScreen
 import com.libredescarga.feature.onboarding.navigation.OnboardingRoute
 import com.libredescarga.feature.onboarding.navigation.onboardingScreen
@@ -60,7 +62,9 @@ fun AppNavHost(
             onOpenVideo = { uri, title, durationMs -> navController.navigate(VideoPlayerRoute(uri, title, durationMs)) },
             onOpenImages = { uris, titles, index -> navController.navigate(ImageViewerRoute(uris, titles, index)) },
         )
+        duplicatesScreen(onBack = { navController.popBackStack() })
         libraryScreen(
+            onOpenDuplicates = { navController.navigate(DuplicatesRoute) },
             onOpenVideo = { media ->
                 navController.navigate(VideoPlayerRoute(media.uri, media.title, media.durationMs))
             },
