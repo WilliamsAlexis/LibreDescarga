@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="downloads_title">Descargas</string>
+    <string name="downloads_settings">Ajustes de descarga</string>
+    <string name="downloads_more">Más opciones</string>
+    <string name="downloads_pause_all">Pausar todas</string>
+    <string name="downloads_resume_all">Reanudar todas</string>
+    <string name="downloads_in_vault">Esta descarga está en la carpeta privada. Ábrela desde allí.</string>
+    <string name="downloads_no_app">No hay ninguna app para abrir este archivo.</string>
+
+    <!-- Pestañas -->
+    <string name="downloads_tab_active">En curso (%1$d)</string>
+    <string name="downloads_tab_completed">Completadas (%1$d)</string>
+    <string name="downloads_tab_failed">Fallidas (%1$d)</string>
+    <string name="downloads_empty_active_title">Nada descargándose</string>
+    <string name="downloads_empty_active_message">Pega un enlace o busca algo en Inicio para empezar.</string>
+    <string name="downloads_empty_completed_title">Aún no hay descargas completadas</string>
+    <string name="downloads_empty_completed_message">Aquí aparecerán tus videos y tu música al terminar.</string>
+    <string name="downloads_empty_failed_title">Sin errores</string>
+    <string name="downloads_empty_failed_message">Si una descarga falla, podrás reintentarla desde aquí.</string>
+
+    <!-- Avisos -->
+    <string name="downloads_low_storage">Queda poco espacio en el teléfono (%1$s libres). Las descargas grandes podrían fallar.</string>
+    <string name="downloads_folder_unavailable">La carpeta de descarga elegida ya no está disponible. Se usarán Movies/ y Music/ hasta que elijas otra.</string>
+
+    <!-- Estado -->
+    <string name="downloads_kind_video">Video</string>
+    <string name="downloads_kind_audio">Audio</string>
+    <string name="downloads_kind_image">Imagen</string>
+    <string name="downloads_queued">En cola</string>
+    <string name="downloads_waiting_network">Esperando conexión…</string>
+    <string name="downloads_waiting_wifi">Esperando Wi-Fi…</string>
+    <string name="downloads_paused">En pausa · %1$d %%</string>
+    <string name="downloads_size_of">%1$s de %2$s</string>
+    <string name="downloads_speed">%1$s/s</string>
+    <string name="downloads_eta">%1$s restantes</string>
+
+    <!-- Acciones -->
+    <string name="downloads_action_pause">Pausar</string>
+    <string name="downloads_action_resume">Reanudar</string>
+    <string name="downloads_action_cancel">Cancelar</string>
+    <string name="downloads_action_retry">Reintentar</string>
+    <string name="downloads_action_prioritize">Descargar primero</string>
+    <string name="downloads_action_open">Abrir</string>
+    <string name="downloads_action_share">Compartir</string>
+    <string name="downloads_action_remove">Quitar de la lista</string>
+    <string name="downloads_remove_title">¿Quitar de la lista?</string>
+    <string name="downloads_remove_delete_file">Borrar también el archivo del teléfono</string>
+    <string name="downloads_remove_confirm">Quitar</string>
+    <string name="downloads_cancel">Cancelar</string>
+    <string name="downloads_clear_completed">Limpiar completadas</string>
+    <string name="downloads_clear_failed">Limpiar fallidas</string>
+    <string name="downloads_clear_button">Limpiar todas (%1$d)</string>
+    <string name="downloads_clear_title_completed">Limpiar descargas completadas</string>
+    <string name="downloads_clear_title_failed">Limpiar descargas fallidas</string>
+    <plurals name="downloads_clear_message">
+        <item quantity="one">Se quitará %1$d descarga de la lista.</item>
+        <item quantity="other">Se quitarán %1$d descargas de la lista.</item>
+    </plurals>
+    <string name="downloads_clear_delete_files">También eliminar del dispositivo los archivos (%1$d)</string>
+    <string name="downloads_clear_delete_warning">Los archivos se borrarán de tu galería y no se podrán recuperar.</string>
+    <string name="downloads_clear_confirm">Limpiar</string>
+
+    <!-- Ajustes -->
+    <string name="downloads_settings_concurrent">Descargas simultáneas</string>
+    <string name="downloads_settings_concurrent_description">Cuántas descargas avanzan a la vez; el resto espera en la cola.</string>
+    <string name="downloads_settings_fragments">Fragmentos por descarga</string>
+    <string name="downloads_settings_fragments_description">Partes que se bajan en paralelo dentro de cada descarga (más rápido en buenas conexiones).</string>
+    <string name="downloads_settings_wifi">Solo por Wi-Fi</string>
+    <string name="downloads_settings_wifi_description">No usa los datos móviles: las descargas esperan a una red Wi-Fi.</string>
+    <string name="downloads_settings_speed">Límite de velocidad (por descarga)</string>
+    <string name="downloads_settings_speed_unlimited">Sin límite</string>
+    <string name="downloads_settings_speed_kb">%1$d KB/s</string>
+    <string name="downloads_settings_speed_mb">%1$d MB/s</string>
+    <string name="downloads_settings_folder">Carpeta de destino</string>
+    <string name="downloads_settings_folder_system">Movies/%1$s y Music/%1$s</string>
+    <string name="downloads_settings_folder_unavailable">La carpeta elegida ya no está disponible</string>
+    <string name="downloads_settings_folder_choose">Elegir carpeta</string>
+    <string name="downloads_settings_folder_reset">Usar carpetas del sistema</string>
+    <string name="downloads_settings_folder_hint">Puedes elegir cualquier carpeta, también en la tarjeta SD.</string>
+</resources>

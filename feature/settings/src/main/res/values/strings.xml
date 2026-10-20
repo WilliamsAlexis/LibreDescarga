@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_settings_title">Ajustes</string>
+    <string name="settings_back">Volver</string>
+    <string name="settings_cancel">Cancelar</string>
+
+    <!-- Apariencia -->
+    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Según el sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_dynamic_color">Colores dinámicos</string>
+    <string name="settings_dynamic_color_description">Usa los colores de tu fondo de pantalla (Material You).</string>
+    <string name="settings_accent">Color de acento</string>
+    <string name="settings_accent_disabled">Desactivado mientras uses colores dinámicos.</string>
+    <string name="settings_accent_teal">Verde azulado</string>
+    <string name="settings_accent_coral">Coral</string>
+    <string name="settings_accent_indigo">Índigo</string>
+    <string name="settings_accent_amber">Ámbar</string>
+    <string name="settings_accent_rose">Rosa</string>
+    <string name="settings_accent_green">Verde</string>
+    <string name="settings_accent_blue">Azul</string>
+    <string name="settings_accent_purple">Morado</string>
+    <string name="settings_accent_red">Rojo</string>
+    <string name="settings_accent_orange">Naranja</string>
+    <string name="settings_accent_cyan">Cian</string>
+    <string name="settings_accent_pink">Fucsia</string>
+    <string name="settings_accent_brown">Café</string>
+    <string name="settings_accent_slate">Gris azulado</string>
+    <string name="settings_accent_yellow">Amarillo</string>
+    <string name="settings_accent_lime">Lima</string>
+    <string name="settings_accent_sky">Celeste</string>
+    <string name="settings_accent_lavender">Lavanda</string>
+    <string name="settings_accent_graphite">Grafito</string>
+
+    <!-- Descargas -->
+    <string name="settings_section_downloads">Descargas</string>
+    <string name="settings_default_video">Calidad de video por defecto</string>
+    <string name="settings_default_audio">Formato de audio por defecto</string>
+    <string name="settings_concurrent">Descargas simultáneas</string>
+    <string name="settings_wifi_only">Solo por Wi-Fi</string>
+    <string name="settings_wifi_only_description">No usa datos móviles para descargar.</string>
+    <string name="settings_clipboard">Detectar enlaces copiados</string>
+    <string name="settings_clipboard_description">Al abrir la app, ofrece descargar el enlace que tengas copiado.</string>
+
+    <!-- Sitios, actualizaciones, datos -->
+    <string name="settings_section_sites">Sitios</string>
+    <string name="settings_sites">Gestionar sitios</string>
+    <string name="settings_sites_description">Activar, ordenar, añadir y bloquear sitios.</string>
+    <string name="settings_section_updates">Actualizaciones</string>
+    <string name="settings_updates">Motor y app</string>
+    <string name="settings_updates_description">yt-dlp, nueva versión de la app y lista de sitios bloqueados.</string>
+    <string name="settings_section_data">Almacenamiento y copia de seguridad</string>
+    <string name="settings_clear_cache">Limpiar caché</string>
+    <string name="settings_cache_size">Ocupa %1$s. No borra tus descargas.</string>
+    <string name="settings_backup_export">Exportar copia de seguridad</string>
+    <string name="settings_backup_export_description">Historial, marcadores, listas y ajustes en un archivo JSON. No incluye la carpeta privada.</string>
+    <string name="settings_backup_restore">Restaurar copia de seguridad</string>
+    <string name="settings_backup_restore_description">Une el archivo con tus datos actuales; no borra nada.</string>
+
+    <!-- Apoyo -->
+    <string name="settings_section_support">Apoyo al creador</string>
+    <string name="settings_support">Apoyar al creador ❤</string>
+    <string name="settings_support_description">Donación voluntaria por PayPal. No desbloquea nada.</string>
+    <string name="settings_hide_reminders">Ocultar recordatorios de donación</string>
+    <string name="settings_hide_reminders_description">No volverás a ver el mensaje de apoyo.</string>
+    <string name="settings_about">Acerca de</string>
+
+    <!-- Mensajes -->
+    <string name="settings_message_cache">Caché limpiada (%1$s liberados)</string>
+    <string name="settings_message_backup_saved">Copia de seguridad guardada</string>
+    <string name="settings_message_backup_restored">Copia restaurada: %1$d marcadores, %2$d listas, %3$d búsquedas</string>
+    <string name="settings_message_backup_invalid">Ese archivo no es una copia de seguridad de la app</string>
+    <string name="settings_message_backup_io">No se pudo leer o guardar el archivo</string>
+
+    <!-- Apoyar al creador -->
+    <string name="settings_support_message">LibreDescarga es gratis, sin anuncios y sin registro. Si quieres apoyar su desarrollo, puedes hacer una donación voluntaria por PayPal. ¡Gracias!</string>
+    <string name="settings_support_donate">Donar con PayPal</string>
+    <string name="settings_support_copy">Copiar enlace de PayPal</string>
+    <string name="settings_support_share">Compartir enlace</string>
+    <string name="settings_support_copied">Enlace copiado</string>
+    <string name="settings_support_no_browser">No hay ningún navegador para abrir el enlace.</string>
+    <string name="settings_support_privacy">La app no procesa pagos, no pide datos de tarjeta y no guarda si donaste. La app es idéntica para quien dona y para quien no.</string>
+    <string name="settings_prompt_title">¿Te gusta %1$s?</string>
+    <string name="settings_prompt_message">Si quieres, puedes apoyar al creador con una donación por PayPal.</string>
+    <string name="settings_prompt_donate">Donar</string>
+    <string name="settings_prompt_no">No, gracias</string>
+
+    <!-- Acerca de -->
+    <string name="settings_about_version">Versión %1$s</string>
+    <string name="settings_about_tagline">%1$s es y será siempre gratis, sin anuncios y sin registro</string>
+    <string name="settings_about_coffee">Invitar un café por PayPal</string>
+    <string name="settings_licenses">Licencias de código abierto</string>
+    <string name="settings_legal">Aviso legal</string>
+    <string name="settings_privacy">Política de privacidad</string>
+    <string name="settings_source_code">Código fuente</string>
+
+    <!-- Licencias -->
+    <string name="settings_licenses_intro">%1$s es software libre y se distribuye bajo la licencia GPL-3.0, porque incluye componentes con esa licencia. Puedes usarlo, estudiarlo, modificarlo y compartirlo.</string>
+    <string name="settings_licenses_source">Código fuente completo: %1$s</string>
+    <string name="settings_licenses_engine">Motor de descarga</string>
+    <string name="settings_licenses_libraries">Bibliotecas</string>
+
+    <!-- Aviso legal -->
+    <string name="settings_legal_use">Solo debes descargar contenido propio, de dominio público, con una licencia que lo permita (por ejemplo, Creative Commons) o con autorización del titular de los derechos.</string>
+    <string name="settings_legal_responsibility">Eres responsable del uso que hagas de la app y del contenido que descargues.</string>
+    <string name="settings_legal_drm">%1$s no descarga ni intenta saltarse contenido protegido con DRM (por ejemplo, Widevine) ni otras medidas técnicas de protección, bajo ninguna circunstancia.</string>
+    <string name="settings_legal_blocklist">Para atender solicitudes de retiro (DMCA o equivalentes), la app incluye una lista de sitios bloqueados que se puede actualizar desde GitHub.</string>
+    <string name="settings_legal_contact_title">Reclamos de derechos de autor</string>
+    <string name="settings_legal_contact_message">Si eres titular de derechos y quieres que se bloquee un sitio, escribe a:</string>
+    <string name="settings_legal_contact_action">Abrir mi app de correo</string>
+
+    <!-- Privacidad -->
+    <string name="settings_privacy_summary">LibreDescarga no recoge, no envía y no vende datos personales. Todo se guarda en tu teléfono. Las donaciones se procesan directamente en PayPal, fuera de la app.</string>
+    <string name="settings_privacy_connections_title">Conexiones a internet</string>
+    <string name="settings_privacy_connections_intro">La app solo se conecta cuando tú lo pides:</string>
+    <string name="settings_privacy_sites">• A los sitios cuyo video o audio analizas, descargas o visitas en el navegador, y al servicio que muestra sus miniaturas.</string>
+    <string name="settings_privacy_github">• A GitHub, solo al buscar actualizaciones de la app, del motor yt-dlp o de la lista de sitios bloqueados.</string>
+    <string name="settings_privacy_search">• A DuckDuckGo, solo si buscas palabras en el navegador integrado.</string>
+    <string name="settings_privacy_never_title">Lo que nunca hace</string>
+    <string name="settings_privacy_never">No tiene anuncios, analíticas, informes automáticos de errores, cuentas ni identificadores publicitarios. Los reportes de error, si quieres enviar uno, se hacen a mano y son opcionales.</string>
+
+    <!-- Actualizaciones -->
+    <string name="settings_updates_privacy">Las actualizaciones se consultan en %1$s (GitHub). No se envía ningún dato personal.</string>
+    <string name="settings_updates_app">Actualización de la app</string>
+    <string name="settings_updates_installed">Instalada: %1$s (código %2$d)</string>
+    <string name="settings_updates_checking">Buscando…</string>
+    <string name="settings_updates_app_current">Ya tienes la última versión.</string>
+    <string name="settings_updates_available">Nueva versión: %1$s</string>
+    <string name="settings_updates_unsupported">Esta versión necesita Android con nivel de API %1$d o superior.</string>
+    <string name="settings_updates_downloading">Descargando… %1$d %%</string>
+    <string name="settings_updates_verifying_note">Después se comprueba su huella SHA-256 y que esté firmada igual que esta app.</string>
+    <string name="settings_updates_verified">Descargada y verificada (SHA-256 y firma correctos).</string>
+    <string name="settings_updates_permission">Android necesita tu permiso para instalar desde esta app. Actívalo en la pantalla que se abrió, vuelve y pulsa «Instalar».</string>
+    <string name="settings_updates_check">Buscar actualización</string>
+    <string name="settings_updates_download">Descargar y verificar</string>
+    <string name="settings_updates_install">Instalar</string>
+    <string name="settings_updates_engine">Motor de descarga (yt-dlp)</string>
+    <string name="settings_updates_engine_version">Versión: %1$s</string>
+    <string name="settings_updates_unknown">desconocida</string>
+    <string name="settings_updates_engine_description">Los sitios cambian a menudo. La app lo actualiza sola una vez por semana cuando hay internet. Si una descarga deja de funcionar, también puedes actualizarlo aquí; no hace falta reinstalar la app.</string>
+    <string name="settings_updates_engine_updating">Actualizando el motor…</string>
+    <string name="settings_updates_engine_updated">Motor actualizado.</string>
+    <string name="settings_updates_engine_current">El motor ya está al día.</string>
+    <string name="settings_updates_engine_action">Actualizar yt-dlp</string>
+    <string name="settings_updates_blocklist">Sitios bloqueados</string>
+    <string name="settings_updates_blocklist_description">Lista de sitios retirados por solicitudes de derechos de autor.</string>
+    <string name="settings_updates_blocklist_updated">Lista actualizada (%1$d sitios).</string>
+    <string name="settings_updates_blocklist_current">La lista ya está al día.</string>
+    <string name="settings_updates_blocklist_action">Actualizar lista</string>
+    <string name="settings_updates_error_network">No hay conexión o GitHub no respondió. Inténtalo de nuevo.</string>
+    <string name="settings_updates_error_manifest">El archivo de actualización publicado no es válido.</string>
+    <string name="settings_updates_error_no_apk">No hay una versión para la arquitectura de este teléfono.</string>
+    <string name="settings_updates_error_hash">La descarga no coincide con su huella SHA-256 y se descartó. No se instaló nada.</string>
+    <string name="settings_updates_error_signature">El archivo no está firmado con la misma clave que esta app y se descartó. No se instaló nada.</string>
+    <string name="settings_updates_error_storage">No hay espacio suficiente para descargar la actualización.</string>
+    <string name="settings_updates_error_unknown">Ocurrió un error inesperado.</string>
+
+    <!-- Sitios -->
+    <string name="settings_sites_grid">Cuadrícula de Inicio</string>
+    <string name="settings_sites_grid_description">Activa o desactiva cada sitio y ordénalos. Los sitios propios se pueden quitar.</string>
+    <string name="settings_sites_move_up">Subir %1$s</string>
+    <string name="settings_sites_move_down">Bajar %1$s</string>
+    <string name="settings_sites_remove">Quitar %1$s</string>
+    <string name="settings_sites_add">Añadir sitio</string>
+    <string name="settings_sites_name">Nombre</string>
+    <string name="settings_sites_url">Dirección (URL)</string>
+    <string name="settings_sites_invalid_site">La dirección no es válida.</string>
+    <string name="settings_sites_add_confirm">Añadir</string>
+    <string name="settings_sites_blocked">Sitios bloqueados por ti</string>
+    <string name="settings_sites_blocked_description">La app no los abrirá ni analizará, además de los sitios de la lista de derechos de autor.</string>
+    <string name="settings_sites_unblock">Desbloquear %1$s</string>
+    <string name="settings_sites_block">Bloquear un sitio</string>
+    <string name="settings_sites_domain">Dominio</string>
+    <string name="settings_sites_block_hint">Por ejemplo: ejemplo.com (incluye sus subdominios).</string>
+    <string name="settings_sites_invalid_domain">Escribe un dominio válido, como ejemplo.com.</string>
+    <string name="settings_sites_block_confirm">Bloquear</string>
+</resources>

@@ -1,0 +1,22 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+**/build/
+/captures
+.externalNativeBuild/
+.cxx/
+.kotlin/
+
+# Firma: nunca subas tu keystore ni sus contraseñas
+keystore.properties
+*.jks
+*.keystore
+
+# Instaladores generados por tools\publicar-release.ps1
+/release/
+
+# Archivos internos de herramientas
+/.claude/

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_open_browser">Abrir el navegador</string>
+
+    <!-- Búsqueda universal -->
+    <string name="home_search_placeholder">Pega un enlace o busca…</string>
+    <string name="home_search_clear">Borrar texto</string>
+    <string name="home_search_paste">Pegar enlace</string>
+    <string name="home_search_in">Buscar en</string>
+    <string name="home_history_remove">Quitar «%1$s» del historial</string>
+    <string name="home_history_clear">Borrar historial</string>
+
+    <!-- Portapapeles -->
+    <string name="home_clipboard_title">¿Descargar este enlace?</string>
+    <string name="home_clipboard_analyze">Analizar</string>
+    <string name="home_clipboard_dismiss">Descartar</string>
+
+    <!-- Categorías -->
+    <string name="home_categories">Explorar</string>
+    <string name="home_category_music">Música</string>
+    <string name="home_category_music_query">música</string>
+    <string name="home_category_movies">Películas</string>
+    <string name="home_category_movies_query">películas de dominio público</string>
+    <string name="home_category_news">Noticias</string>
+    <string name="home_category_news_query">noticias</string>
+    <string name="home_category_sports">Deportes</string>
+    <string name="home_category_sports_query">deportes</string>
+    <string name="home_category_gaming">Gaming</string>
+    <string name="home_category_gaming_query">gaming</string>
+
+    <!-- Sitios -->
+    <string name="home_sites">Sitios</string>
+    <string name="home_site_add">Agregar</string>
+    <string name="home_site_add_title">Agregar sitio</string>
+    <string name="home_site_name">Nombre</string>
+    <string name="home_site_url">Dirección (URL)</string>
+    <string name="home_site_add_confirm">Agregar</string>
+    <string name="home_site_remove_title">Quitar sitio</string>
+    <string name="home_site_remove_message">¿Quitar «%1$s» de tus sitios?</string>
+    <string name="home_site_remove_confirm">Quitar</string>
+    <string name="home_cancel">Cancelar</string>
+
+    <!-- Resultados -->
+    <string name="home_results_for">«%1$s» en %2$s</string>
+    <string name="home_results_close">Cerrar resultados</string>
+    <string name="home_searching">Buscando…</string>
+    <string name="home_no_results">No se encontraron resultados.</string>
+    <string name="home_retry">Reintentar</string>
+    <string name="home_quick_download">Descarga rápida de %1$s</string>
+
+    <!-- Mensajes -->
+    <plurals name="home_downloads_queued">
+        <item quantity="one">Descarga añadida a la cola</item>
+        <item quantity="many">%1$d descargas añadidas a la cola</item>
+        <item quantity="other">%1$d descargas añadidas a la cola</item>
+    </plurals>
+    <string name="home_forbidden_link">Por seguridad, solo se aceptan enlaces http y https.</string>
+    <string name="home_invalid_site">La dirección del sitio no es válida.</string>
+    <string name="home_no_browser">No hay ningún navegador instalado para abrir el sitio.</string>
+</resources>

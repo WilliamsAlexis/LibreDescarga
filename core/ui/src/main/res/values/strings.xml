@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_ui_upcoming_feature">Esta sección estará disponible muy pronto.</string>
+
+    <!-- Tamaños, vistas y calidades -->
+    <string name="core_ui_size_estimated">≈ %1$s</string>
+    <string name="core_ui_size_unknown">Tamaño desconocido</string>
+    <string name="core_ui_views">%1$s vistas</string>
+    <string name="core_ui_quality_original">Calidad original</string>
+    <string name="core_ui_quality_ask">Preguntar siempre</string>
+    <string name="core_ui_quality_best">Mejor calidad</string>
+    <string name="core_ui_audio_mp3">MP3 · %1$d kbps</string>
+    <string name="core_ui_audio_m4a">M4A (AAC)</string>
+    <string name="core_ui_audio_opus">OPUS</string>
+
+    <!-- Errores -->
+    <string name="core_ui_error_invalid_url">El enlace no es válido. Revisa que empiece por https://</string>
+    <string name="core_ui_error_forbidden_scheme">Por seguridad, solo se aceptan enlaces http y https.</string>
+    <string name="core_ui_error_blocked">Este sitio (%1$s) no está disponible en la app por una solicitud de derechos de autor.</string>
+    <string name="core_ui_error_drm">Este contenido está protegido y no se puede descargar</string>
+    <string name="core_ui_error_live">Las transmisiones en directo no se pueden descargar. Inténtalo cuando terminen.</string>
+    <string name="core_ui_error_unsupported">Este sitio o enlace no es compatible con el motor de descarga.</string>
+    <string name="core_ui_error_not_public">Este contenido no es público o requiere iniciar sesión en el sitio.</string>
+    <string name="core_ui_error_age_restricted">Este contenido tiene restricción de edad. YouTube exige iniciar sesión para verlo y LibreDescarga no usa cuentas, por eso no se puede descargar.</string>
+    <string name="core_ui_error_bot_check">YouTube pidió comprobar que no eres un robot. Espera unos minutos o cambia de red (Wi-Fi o datos móviles) e inténtalo de nuevo.</string>
+    <string name="core_ui_error_unavailable">Este contenido ya no está disponible o está restringido en tu región.</string>
+    <string name="core_ui_error_network">No hay conexión o el sitio no respondió. Revisa tu internet e inténtalo de nuevo.</string>
+    <string name="core_ui_error_storage">No hay espacio suficiente en el almacenamiento.</string>
+    <string name="core_ui_error_unknown">Ocurrió un error inesperado.</string>
+    <string name="core_ui_error_unknown_details">Ocurrió un error: %1$s</string>
+</resources>

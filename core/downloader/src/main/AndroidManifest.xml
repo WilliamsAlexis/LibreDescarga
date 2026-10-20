@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <!-- Servicio en primer plano de WorkManager para las descargas en segundo plano. -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+        <!-- Botones de las notificaciones (solo la propia app puede enviarlos). -->
+        <receiver
+            android:name=".DownloadActionReceiver"
+            android:exported="false" />
+    </application>
+</manifest>

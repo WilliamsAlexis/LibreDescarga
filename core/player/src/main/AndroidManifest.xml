@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!--
+            Reproducción en segundo plano con MediaSession: controles en la notificación,
+            en la pantalla de bloqueo y en auriculares Bluetooth. Se exporta para que el
+            sistema y los auriculares puedan controlarla (es el uso estándar de Media3).
+        -->
+        <service
+            android:name=".PlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

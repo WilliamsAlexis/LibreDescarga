@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Capa frontal del ícono adaptativo de LibreDescarga (108 × 108 dp).
+    Todo el dibujo queda dentro de la zona segura central de 66 dp.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Forma abierta tipo "ala" -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M36,48 C36,64 44,74 54,74 C64,74 72,66 72,54"
+        android:strokeWidth="6"
+        android:strokeColor="#FFC857"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M36,48 C34,43 34,39 36,35"
+        android:strokeWidth="5"
+        android:strokeColor="#FFC857"
+        android:strokeLineCap="round" />
+
+    <!-- Flecha de descarga -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50.5,32 L57.5,32 L57.5,50 L65.5,50 L54,63 L42.5,50 L50.5,50 Z" />
+</vector>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_vault_title">Carpeta privada</string>
+
+    <!-- Teclados -->
+    <string name="vault_pin_entered">%1$d dígitos escritos</string>
+    <string name="vault_pin_delete">Borrar un dígito</string>
+    <string name="vault_pin_confirm">Confirmar PIN</string>
+    <string name="vault_pattern_hint">Dibuja tu patrón uniendo los puntos con el dedo</string>
+
+    <!-- Crear el acceso -->
+    <string name="vault_setup_title">Crea tu acceso privado</string>
+    <string name="vault_change_title">Cambiar el acceso</string>
+    <string name="vault_recovery_new_title">Elige un acceso nuevo</string>
+    <string name="vault_type_pin">PIN</string>
+    <string name="vault_type_pattern">Patrón</string>
+    <string name="vault_create_pin">Elige un PIN de 4 a 12 dígitos</string>
+    <string name="vault_create_pattern">Dibuja un patrón de al menos 4 puntos</string>
+    <string name="vault_confirm_pin">Escribe el PIN otra vez</string>
+    <string name="vault_confirm_pattern">Dibuja el patrón otra vez</string>
+    <string name="vault_weak_pin">Este PIN es fácil de adivinar. Puedes continuar, pero uno menos obvio es más seguro.</string>
+    <string name="vault_start_over">Empezar de nuevo</string>
+
+    <!-- Pregunta de seguridad -->
+    <string name="vault_question_title">Pregunta de seguridad</string>
+    <string name="vault_question_message">Si olvidas el acceso, responder esta pregunta te permitirá crear uno nuevo sin perder tus archivos. Se guarda solo en tu teléfono.</string>
+    <string name="vault_question_choose">Elige una pregunta</string>
+    <string name="vault_question_custom">Escribir mi propia pregunta</string>
+    <string name="vault_question_custom_label">Tu pregunta</string>
+    <string name="vault_answer">Respuesta</string>
+    <string name="vault_answer_hint">No distingue mayúsculas ni tildes</string>
+    <string name="vault_error_question_missing">Elige o escribe una pregunta.</string>
+    <string name="vault_error_answer_short">La respuesta es demasiado corta.</string>
+    <string name="vault_setup_biometric">Desbloquear también con huella o rostro</string>
+    <string name="vault_finish">Crear carpeta privada</string>
+    <string name="vault_back">Atrás</string>
+    <string-array name="vault_security_questions">
+        <item>¿Cómo se llamaba tu primera mascota?</item>
+        <item>¿En qué ciudad naciste?</item>
+        <item>¿Cómo se llamaba tu mejor amigo de la infancia?</item>
+        <item>¿Cuál fue tu primer trabajo?</item>
+        <item>¿Cómo se llamaba tu primera escuela?</item>
+    </string-array>
+
+    <!-- Desbloquear -->
+    <string name="vault_locked_title">Carpeta privada</string>
+    <string name="vault_locked_pin">Escribe tu PIN para entrar</string>
+    <string name="vault_locked_pattern">Dibuja tu patrón para entrar</string>
+    <string name="vault_use_biometric">Usar huella o rostro</string>
+    <string name="vault_forgot_pin">Olvidé mi PIN</string>
+    <string name="vault_forgot_pattern">Olvidé mi patrón</string>
+    <string name="vault_biometric_title">Carpeta privada</string>
+    <string name="vault_biometric_subtitle">Confirma tu identidad</string>
+    <string name="vault_error_pin_short">El PIN debe tener al menos 4 dígitos.</string>
+    <string name="vault_error_pattern_short">Une al menos 4 puntos.</string>
+    <string name="vault_error_mismatch">No coinciden. Empieza de nuevo.</string>
+    <string name="vault_error_wrong_pin">PIN incorrecto. Intentos antes de esperar: %1$d</string>
+    <string name="vault_error_wrong_pattern">Patrón incorrecto. Intentos antes de esperar: %1$d</string>
+    <string name="vault_error_wrong_answer">Respuesta incorrecta. Intentos antes de esperar: %1$d</string>
+    <string name="vault_error_locked">Demasiados intentos. Espera %1$s para volver a probar.</string>
+
+    <!-- Recuperación -->
+    <string name="vault_recovery_title">Recuperar el acceso</string>
+    <string name="vault_continue">Continuar</string>
+    <string name="vault_cancel">Cancelar</string>
+    <string name="vault_erase_everything">Tampoco recuerdo la respuesta</string>
+    <string name="vault_erase_title">¿Borrar la carpeta privada?</string>
+    <string name="vault_erase_message">Se eliminarán TODOS los archivos de la carpeta privada y su configuración. No se pueden recuperar. Después podrás empezar de cero.</string>
+    <string name="vault_erase_understood">Entiendo que se perderán los archivos</string>
+    <string name="vault_erase_confirm">Borrar todo</string>
+
+    <!-- Contenido -->
+    <string name="vault_lock_now">Bloquear ahora</string>
+    <string name="vault_settings">Ajustes de la carpeta privada</string>
+    <string name="vault_add">Añadir</string>
+    <string name="vault_empty_title">Tu carpeta privada está vacía</string>
+    <string name="vault_empty_message">Los archivos que guardes aquí no aparecen en la galería ni en otras apps. Añade videos o música de tu biblioteca, o activa que las descargas vayan directo aquí.</string>
+    <string name="vault_encrypted">Cifrado</string>
+    <string name="vault_not_encrypted">Sin cifrar</string>
+    <string name="vault_actions_for">Acciones para %1$s</string>
+    <string name="vault_restore">Sacar de la carpeta privada</string>
+    <string name="vault_rename">Renombrar</string>
+    <string name="vault_name">Nombre</string>
+    <string name="vault_save">Guardar</string>
+    <string name="vault_delete">Eliminar</string>
+    <string name="vault_delete_title">¿Eliminar archivo?</string>
+    <string name="vault_delete_message">«%1$s» se eliminará de forma definitiva. Esta acción no se puede deshacer.</string>
+    <string name="vault_delete_confirm">Eliminar</string>
+
+    <!-- Ajustes -->
+    <string name="vault_change_credential">Cambiar PIN o patrón</string>
+    <string name="vault_setting_biometric">Huella o rostro</string>
+    <string name="vault_setting_biometric_desc">Entrar sin escribir el PIN. El PIN sigue siendo necesario si falla.</string>
+    <string name="vault_setting_encrypt">Cifrar archivos nuevos</string>
+    <string name="vault_setting_encrypt_desc">AES-256-GCM, con una clave que no sale de este teléfono. Los archivos ya guardados no cambian.</string>
+    <string name="vault_setting_downloads">Descargas directas a la carpeta privada</string>
+    <string name="vault_setting_downloads_desc">Lo que descargues no pasará por la galería ni mostrará su nombre en las notificaciones.</string>
+    <string name="vault_setting_autolock">La carpeta se bloquea sola al salir de la app, y no permite capturas de pantalla.</string>
+
+    <!-- Añadir desde la biblioteca -->
+    <string name="vault_add_title">Mover a la carpeta privada</string>
+    <string name="vault_add_message">Los archivos se copian aquí y se borran de la galería. Android te pedirá confirmar el borrado.</string>
+    <string name="vault_add_empty">No hay videos ni música en la biblioteca. Si no ves tus archivos, concede el permiso en la pestaña Biblioteca.</string>
+    <string name="vault_add_confirm">Mover (%1$d)</string>
+
+    <!-- Mensajes -->
+    <string name="vault_message_changed">Acceso actualizado</string>
+    <string name="vault_message_restored">Archivo devuelto a la biblioteca</string>
+    <string name="vault_message_restore_failed">No se pudo sacar el archivo</string>
+    <string name="vault_message_deleted">Archivo eliminado</string>
+    <string name="vault_message_erased">Carpeta privada borrada</string>
+    <string name="vault_message_originals_kept">Copiado a la carpeta privada, pero los originales siguen en la galería</string>
+    <string name="vault_message_move_failed">No se pudo copiar a la carpeta privada. No se borró nada.</string>
+    <plurals name="vault_message_moved">
+        <item quantity="one">%1$d archivo movido a la carpeta privada</item>
+        <item quantity="many">%1$d archivos movidos a la carpeta privada</item>
+        <item quantity="other">%1$d archivos movidos a la carpeta privada</item>
+    </plurals>
+    <plurals name="vault_message_moved_partial">
+        <item quantity="one">%1$d archivo movido; %2$d no se pudo copiar</item>
+        <item quantity="many">%1$d archivos movidos; %2$d no se pudieron copiar</item>
+        <item quantity="other">%1$d archivos movidos; %2$d no se pudieron copiar</item>
+    </plurals>
+</resources>

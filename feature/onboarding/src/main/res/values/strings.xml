@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navegación de la bienvenida -->
+    <string name="onboarding_back">Atrás</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Empezar</string>
+    <string name="onboarding_step_content_description">Paso %1$d de %2$d</string>
+
+    <!-- Paso 1: bienvenida -->
+    <string name="onboarding_logo_content_description">Logo de %1$s</string>
+    <string name="onboarding_welcome_title">%1$s: gratis, sin anuncios y sin registro</string>
+    <string name="onboarding_welcome_body">Descarga y reproduce tus videos y tu música. Todo funciona desde el primer momento y se guarda solo en tu teléfono.</string>
+    <string name="onboarding_principle_free_title">Gratis para siempre</string>
+    <string name="onboarding_principle_free_body">Sin pagos, sin planes premium y sin funciones bloqueadas.</string>
+    <string name="onboarding_principle_no_ads_title">Sin anuncios</string>
+    <string name="onboarding_principle_no_ads_body">Nunca verás publicidad ni contenido patrocinado.</string>
+    <string name="onboarding_principle_no_account_title">Sin registro</string>
+    <string name="onboarding_principle_no_account_body">No necesitas cuenta, correo ni número de teléfono.</string>
+    <string name="onboarding_principle_no_tracking_title">Sin rastreo</string>
+    <string name="onboarding_principle_no_tracking_body">Sin analíticas ni identificadores publicitarios.</string>
+
+    <!-- Paso 2: permisos -->
+    <string name="onboarding_permissions_title">Permisos que usamos</string>
+    <string name="onboarding_permissions_body">Solo pedimos lo imprescindible. Puedes cambiarlos cuando quieras en los ajustes de Android.</string>
+    <string name="onboarding_permission_notifications_title">Notificaciones</string>
+    <string name="onboarding_permission_notifications_body">Para mostrarte el progreso de las descargas y los controles de la música.</string>
+    <string name="onboarding_permission_media_title">Videos y música del teléfono</string>
+    <string name="onboarding_permission_media_body">Para mostrar en la biblioteca los archivos que ya tienes. Es opcional.</string>
+    <string name="onboarding_permission_internet_title">Internet</string>
+    <string name="onboarding_permission_internet_body">Para analizar enlaces y descargar. Se concede automáticamente.</string>
+    <string name="onboarding_permission_updates_title">Instalar actualizaciones</string>
+    <string name="onboarding_permission_updates_body">Solo se pedirá si decides actualizar la app desde GitHub.</string>
+    <string name="onboarding_permission_allow">Permitir</string>
+    <string name="onboarding_permission_granted">Concedido</string>
+    <string name="onboarding_permission_automatic">Automático</string>
+    <string name="onboarding_permission_on_demand">Se pide al actualizar</string>
+
+    <!-- Paso 3: términos -->
+    <string name="onboarding_terms_title">Términos de uso</string>
+    <string name="onboarding_terms_intro">Antes de empezar, lee y acepta estas condiciones:</string>
+    <string name="onboarding_terms_item_content">Solo descargarás contenido propio, de dominio público, con una licencia que lo permita (por ejemplo, Creative Commons) o con autorización del titular de los derechos.</string>
+    <string name="onboarding_terms_item_responsibility">Eres responsable del uso que hagas de la app y del contenido que descargues.</string>
+    <string name="onboarding_terms_item_drm">%1$s no descarga ni intenta saltarse contenido protegido con DRM ni otras medidas técnicas de protección.</string>
+    <string name="onboarding_terms_item_blocklist">Los sitios retirados por solicitudes de derechos de autor (DMCA o equivalentes) quedan bloqueados en la app.</string>
+    <string name="onboarding_terms_contact">Reclamos de derechos de autor: %1$s</string>
+    <string name="onboarding_privacy_title">Privacidad</string>
+    <string name="onboarding_privacy_body">%1$s no recoge, no envía y no vende datos personales. Todo se guarda en tu teléfono. Las donaciones se procesan directamente en PayPal, fuera de la app.</string>
+    <string name="onboarding_terms_accept">He leído y acepto los términos de uso</string>
+    <string name="onboarding_terms_required">Debes aceptar los términos para continuar.</string>
+</resources>

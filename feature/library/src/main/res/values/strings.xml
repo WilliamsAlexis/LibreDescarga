@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_library_title">Biblioteca</string>
+    <string name="library_back">Volver</string>
+    <string name="library_cancel">Cancelar</string>
+    <string name="library_close">Cerrar</string>
+    <string name="library_save">Guardar</string>
+    <string name="library_name">Nombre</string>
+    <string name="library_favorite">Favorito</string>
+    <string name="library_actions_for">Acciones para %1$s</string>
+    <string name="library_items_count">%1$d elementos</string>
+
+    <!-- Pestañas -->
+    <string name="library_tab_videos">Videos</string>
+    <string name="library_tab_music">Música</string>
+    <string name="library_tab_folders">Carpetas</string>
+    <string name="library_tab_playlists">Listas</string>
+    <string name="library_favorites">Favoritos</string>
+
+    <!-- Barra superior -->
+    <string name="library_search">Buscar</string>
+    <string name="library_search_hint">Buscar en la biblioteca…</string>
+    <string name="library_search_close">Cerrar búsqueda</string>
+    <string name="library_view_list">Ver como lista</string>
+    <string name="library_view_grid">Ver como cuadrícula</string>
+    <string name="library_sort">Ordenar</string>
+    <string name="library_sort_date">Fecha</string>
+    <string name="library_sort_name">Nombre</string>
+    <string name="library_sort_size">Tamaño</string>
+    <string name="library_sort_duration">Duración</string>
+    <string name="library_play_all">Reproducir todo</string>
+
+    <!-- Estados vacíos y permiso -->
+    <string name="library_empty_title">Aún no hay archivos</string>
+    <string name="library_empty_message">Tus descargas y los archivos multimedia del teléfono aparecerán aquí.</string>
+    <string name="library_empty_search_title">Sin resultados</string>
+    <string name="library_empty_search_message">Prueba con otras palabras.</string>
+    <string name="library_permission_title">Ver los archivos del teléfono</string>
+    <string name="library_permission_message">Sin este permiso solo verás lo que descargues con la app. Concederlo es opcional.</string>
+    <string name="library_permission_grant">Permitir</string>
+
+    <!-- Acciones de un archivo -->
+    <string name="library_action_play_audio">Reproducir como audio</string>
+    <string name="library_action_favorite">Añadir a favoritos</string>
+    <string name="library_action_unfavorite">Quitar de favoritos</string>
+    <string name="library_action_add_playlist">Añadir a una lista</string>
+    <string name="library_action_remove_playlist">Quitar de esta lista</string>
+    <string name="library_action_rename">Renombrar</string>
+    <string name="library_action_move">Mover</string>
+    <string name="library_action_share">Compartir</string>
+    <string name="library_action_details">Detalles</string>
+    <string name="library_action_convert">Convertir a MP3</string>
+    <string name="library_action_delete">Eliminar</string>
+    <string name="library_move_confirm">Mover</string>
+    <string name="library_delete_title">¿Eliminar archivo?</string>
+    <string name="library_delete_message">«%1$s» se eliminará del teléfono. Esta acción no se puede deshacer.</string>
+    <string name="library_delete_confirm">Eliminar</string>
+
+    <!-- Detalles -->
+    <string name="library_details_name">Nombre</string>
+    <string name="library_details_folder">Carpeta</string>
+    <string name="library_details_size">Tamaño</string>
+    <string name="library_details_duration">Duración</string>
+    <string name="library_details_resolution">Resolución</string>
+    <string name="library_details_artist">Artista</string>
+    <string name="library_details_album">Álbum</string>
+    <string name="library_details_type">Tipo</string>
+    <string name="library_details_date">Fecha</string>
+
+    <!-- Listas -->
+    <string name="library_playlist_new">Nueva lista</string>
+    <string name="library_playlist_new_name">Nombre de la nueva lista</string>
+    <string name="library_playlist_create">Crear</string>
+    <string name="library_playlist_rename">Renombrar lista</string>
+    <string name="library_playlist_delete">Eliminar lista</string>
+    <string name="library_playlist_delete_message">Se eliminará la lista «%1$s». Los archivos no se borran.</string>
+
+    <!-- Mensajes -->
+    <string name="library_message_renamed">Archivo renombrado</string>
+    <string name="library_message_moved">Archivo movido</string>
+    <string name="library_message_deleted">Archivo eliminado</string>
+    <string name="library_message_failed">No se pudo completar la operación</string>
+    <string name="library_message_conversion">Conversión a MP3 añadida a Descargas</string>
+    <string name="library_message_added">Añadido a «%1$s»</string>
+    <string name="library_action_move_to_vault">Mover a la carpeta privada</string>
+    <string name="library_message_vault_moved">Archivo movido a la carpeta privada</string>
+    <string name="library_message_vault_locked">Abre y desbloquea la carpeta privada primero (pestaña Privado)</string>
+    <string name="library_message_vault_failed">No se pudo copiar a la carpeta privada. No se borró nada.</string>
+    <string name="library_message_vault_original_kept">Copiado a la carpeta privada, pero el original sigue en la galería</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nombre visible de la app: se cambia SOLO aquí. -->
+    <string name="app_name" translatable="false">LibreDescarga</string>
+
+    <!-- Navegación principal -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_downloads">Descargas</string>
+    <string name="nav_library">Biblioteca</string>
+    <string name="nav_vault">Privado</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Compartir con LibreDescarga desde otras apps -->
+    <string name="share_target_label">Descargar con LibreDescarga</string>
+    <string name="share_queued">Descarga en cola. Sigue en segundo plano; la ves en LibreDescarga → Descargas.</string>
+    <string name="share_failed">No se pudo agregar la descarga.</string>
+    <string name="share_invalid_link">No se encontró un enlace válido para descargar.</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="downloader_channel_progress">Descargas en curso</string>
+    <string name="downloader_channel_progress_description">Progreso de las descargas activas</string>
+    <string name="downloader_channel_done">Descargas terminadas</string>
+    <string name="downloader_channel_done_description">Avisos al completar o fallar una descarga</string>
+    <string name="downloader_preparing">Preparando…</string>
+    <string name="downloader_progress_percent">%1$d %%</string>
+    <string name="downloader_progress_speed">%1$d %% · %2$s/s</string>
+    <string name="downloader_completed">Descarga completada</string>
+    <string name="downloader_completed_private">Guardada en la carpeta privada</string>
+    <string name="downloader_failed">La descarga falló</string>
+    <string name="downloader_action_pause">Pausar</string>
+    <string name="downloader_action_cancel">Cancelar</string>
+    <string name="downloader_action_retry">Reintentar</string>
+    <string name="downloader_action_open">Abrir</string>
+    <string name="downloader_action_share">Compartir</string>
+</resources>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Barra de direcciones -->
+    <string name="browser_close">Cerrar navegador</string>
+    <string name="browser_address_hint">Buscar o escribir una dirección</string>
+    <string name="browser_address_hint_incognito">Buscar en incógnito</string>
+    <string name="browser_clear">Borrar texto</string>
+    <string name="browser_bookmark_add">Añadir marcador</string>
+    <string name="browser_bookmark_remove">Quitar marcador</string>
+    <string name="browser_tabs_count">Pestañas abiertas: %1$d</string>
+    <string name="browser_menu">Más opciones</string>
+
+    <!-- Controles -->
+    <string name="browser_back">Atrás</string>
+    <string name="browser_forward">Adelante</string>
+    <string name="browser_reload">Recargar</string>
+    <string name="browser_stop">Detener</string>
+    <string name="browser_share">Compartir página</string>
+    <string name="browser_home">Pestaña nueva</string>
+
+    <!-- Descarga -->
+    <string name="browser_download">Descargar</string>
+    <string name="browser_download_count">Descargar (%1$d)</string>
+    <string name="browser_candidates_title">¿Qué quieres descargar?</string>
+    <string name="browser_drm">Este contenido está protegido y no se puede descargar</string>
+
+    <!-- Errores -->
+    <string name="browser_error">No se pudo cargar la página</string>
+    <string name="browser_error_hint">Revisa tu conexión. Si el sitio usa un certificado no válido, la app no continúa por seguridad.</string>
+    <string name="browser_retry">Reintentar</string>
+
+    <!-- Página de inicio -->
+    <string name="browser_start_title">Navegador</string>
+    <string name="browser_start_message">Navega y, cuando una página tenga un video o audio descargable, aparecerá el botón de descarga. Las búsquedas usan DuckDuckGo.</string>
+    <string name="browser_start_incognito_title">Navegación de incógnito</string>
+    <string name="browser_start_incognito_message">No se guarda historial, cookies ni datos del sitio. Todo se borra al salir del navegador.</string>
+    <string name="browser_start_incognito_limited">No se guarda historial ni caché. Tu versión de Android WebView no admite aislar las cookies, así que no se borran al salir.</string>
+
+    <!-- Pestañas -->
+    <string name="browser_new_tab">Pestaña nueva</string>
+    <string name="browser_new_incognito_tab">Pestaña de incógnito</string>
+    <string name="browser_incognito_label">Incógnito</string>
+    <string name="browser_blank_page">Página en blanco</string>
+    <string name="browser_close_tab">Cerrar pestaña</string>
+
+    <!-- Marcadores e historial -->
+    <string name="browser_bookmarks_history">Marcadores e historial</string>
+    <string name="browser_bookmarks">Marcadores</string>
+    <string name="browser_history">Historial</string>
+    <string name="browser_history_clear">Borrar historial</string>
+    <string name="browser_bookmarks_empty">Aún no tienes marcadores. Toca la estrella para añadir uno.</string>
+    <string name="browser_history_empty">El historial está vacío.</string>
+    <string name="browser_remove">Quitar</string>
+
+    <!-- Mensajes -->
+    <string name="browser_message_blocked_scheme">Enlace bloqueado por seguridad: solo se abren páginas http y https.</string>
+    <string name="browser_message_blocked_domain">Este sitio (%1$s) no está disponible por una solicitud de derechos de autor.</string>
+    <plurals name="browser_message_queued">
+        <item quantity="one">Descarga añadida a la cola</item>
+        <item quantity="many">%1$d descargas añadidas a la cola</item>
+        <item quantity="other">%1$d descargas añadidas a la cola</item>
+    </plurals>
+    <string name="browser_message_bookmark_added">Marcador añadido</string>
+    <string name="browser_message_bookmark_removed">Marcador quitado</string>
+    <string name="browser_message_history_cleared">Historial borrado</string>
+    <string name="browser_message_image_failed">No se pudo agregar la imagen a las descargas</string>
+    <string name="browser_media_title">Descargar</string>
+    <string name="browser_media_hint">Solo se ofrece lo que estás viendo o escuchando ahora. El avance lo ves en Descargas.</string>
+    <string name="browser_media_empty">No hay nada para descargar ahora. Reproduce un video o audio para poder bajarlo.</string>
+    <string name="browser_media_page_title">Este video o audio</string>
+    <string name="browser_media_page_subtitle">Elige MP4 o MP3 y la calidad</string>
+    <string name="browser_media_kind_video">Video</string>
+    <string name="browser_media_kind_audio">Audio</string>
+    <string name="browser_media_kind_image">Imagen</string>
+    <string name="browser_media_download">Descargar</string>
+    <string name="browser_media_queued">En cola</string>
+    <string name="browser_menu_images">Imágenes de la página</string>
+    <string name="browser_message_no_images">No se encontraron imágenes en esta página</string>
+    <string name="browser_images_title">Imágenes de la página</string>
+    <string name="browser_images_hint">%1$d imágenes encontradas. Toca las que quieras guardar.</string>
+    <string name="browser_images_select_all">Seleccionar todas</string>
+    <string name="browser_images_select_none">Quitar selección</string>
+    <string name="browser_images_item">Imagen %1$d</string>
+    <string name="browser_images_download">Descargar (%1$d)</string>
+    <string name="browser_image_title">Guardar imagen</string>
+    <string name="browser_image_message">¿Quieres guardar esta imagen de %1$s en tu galería?</string>
+    <string name="browser_image_download">Guardar</string>
+    <string name="browser_image_cancel">Cancelar</string>
+</resources>

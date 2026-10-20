@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Controles comunes -->
+    <string name="player_back">Volver</string>
+    <string name="player_play">Reproducir</string>
+    <string name="player_pause">Pausar</string>
+    <string name="player_stop">Cerrar reproductor</string>
+    <string name="player_close">Cerrar</string>
+    <string name="player_more">Más opciones</string>
+
+    <!-- Video -->
+    <string name="player_seek_back">−10 s</string>
+    <string name="player_seek_forward">+10 s</string>
+    <string name="player_zoom_fill">Llenar pantalla</string>
+    <string name="player_zoom_fit">Ajustar</string>
+    <string name="player_subtitles">Subtítulos</string>
+    <string name="player_subtitles_off">Sin subtítulos</string>
+    <string name="player_subtitles_load">Cargar archivo SRT o VTT…</string>
+    <string name="player_audio_track">Pista de audio</string>
+    <string name="player_keep_background">Seguir sonando al salir</string>
+    <string name="player_lock">Bloquear pantalla</string>
+    <string name="player_unlock">Desbloquear pantalla</string>
+    <string name="player_rotation">Orientación</string>
+    <string name="player_pip">Ventana flotante</string>
+
+    <!-- Música -->
+    <string name="player_now_playing">Reproduciendo</string>
+    <string name="player_minimize">Minimizar</string>
+    <string name="player_nothing_playing">No hay nada en reproducción</string>
+    <string name="player_favorite">Añadir a favoritos</string>
+    <string name="player_unfavorite">Quitar de favoritos</string>
+    <string name="player_previous">Anterior</string>
+    <string name="player_next">Siguiente</string>
+    <string name="player_shuffle">Aleatorio</string>
+    <string name="player_repeat_off">Repetir: desactivado</string>
+    <string name="player_repeat_all">Repetir toda la cola</string>
+    <string name="player_repeat_one">Repetir esta canción</string>
+    <string name="player_queue">Cola de reproducción</string>
+    <string name="player_queue_remove">Quitar %1$s de la cola</string>
+    <string name="player_sleep_timer">Temporizador de apagado</string>
+    <string name="player_sleep_minutes">%1$d minutos</string>
+    <string name="player_sleep_cancel">Cancelar temporizador</string>
+    <string name="player_sleep_remaining">Se apagará en %1$s</string>
+    <string name="player_equalizer">Ecualizador</string>
+    <string name="player_equalizer_enable">Activar ecualizador</string>
+    <string name="player_equalizer_unavailable">Este teléfono no admite el ecualizador.</string>
+    <string name="player_image_share">Compartir</string>
+    <string name="player_image_counter">%1$d de %2$d</string>
+    <string name="player_image_error">No se pudo mostrar la imagen</string>
+</resources>

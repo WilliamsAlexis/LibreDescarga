@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ícono temático (Android 13+): el sistema lo colorea según el fondo de pantalla. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M36,48 C36,64 44,74 54,74 C64,74 72,66 72,54"
+        android:strokeWidth="6"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M36,48 C34,43 34,39 36,35"
+        android:strokeWidth="5"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M50.5,32 L57.5,32 L57.5,50 L65.5,50 L54,63 L42.5,50 L50.5,50 Z" />
+</vector>
