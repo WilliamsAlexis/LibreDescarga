@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val requestNotifications = notificationPermissionRequester()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
@@ -59,6 +61,11 @@ class MainActivity : AppCompatActivity() {
             if (state is MainActivityUiState.Success) {
                 val darkTheme = isDarkTheme(state.settings.themeMode)
                 val pendingLink by viewModel.pendingLink.collectAsStateWithLifecycle()
+
+                // Con la bienvenida terminada se pide el permiso de notificaciones (opcional) para mostrar el avance.
+                LaunchedEffect(state.showOnboarding) {
+                    if (!state.showOnboarding) requestNotifications()
+                }
 
                 DisposableEffect(darkTheme) {
                     enableEdgeToEdge(

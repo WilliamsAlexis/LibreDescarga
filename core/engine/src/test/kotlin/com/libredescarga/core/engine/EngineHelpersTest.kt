@@ -35,7 +35,10 @@ class EngineHelpersTest {
     @Test
     fun `video con formato concreto une el mejor audio compatible`() {
         val args = DownloadCommandBuilder.build(base, "/tmp/d1")
-        assertEquals("137+ba[ext=m4a]/137+ba/137", args.valueOf("-f"))
+        assertEquals(
+            "137+ba[ext=m4a]/137+ba/137/bv*[ext=mp4]+ba[ext=m4a]/bv*+ba/b",
+            args.valueOf("-f"),
+        )
         assertEquals("mp4", args.valueOf("--merge-output-format"))
         assertEquals("/tmp/d1/Mi video 100%%.%(ext)s", args.valueOf("-o"))
         assertTrue("--no-playlist" in args)
@@ -45,7 +48,7 @@ class EngineHelpersTest {
     @Test
     fun `video con audio incluido usa solo su formato`() {
         val request = base.copy(video = base.video!!.copy(formatId = "18", formatHasAudio = true))
-        assertEquals("18", DownloadCommandBuilder.build(request, "/tmp").valueOf("-f"))
+        assertEquals("18/bv*+ba/b", DownloadCommandBuilder.build(request, "/tmp").valueOf("-f"))
     }
 
     @Test

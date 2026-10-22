@@ -59,8 +59,10 @@ object DownloadCommandBuilder {
         val formatId = selection.formatId
 
         val format = when {
-            formatId != null && selection.formatHasAudio -> formatId
-            formatId != null -> "$formatId+ba[ext=$audioExt]/$formatId+ba/$formatId"
+            // Si el formato elegido ya no está disponible (algunos sitios como Facebook cambian sus identificadores),
+            // se usa el mejor disponible en lugar de fallar.
+            formatId != null && selection.formatHasAudio -> "$formatId/bv*+ba/b"
+            formatId != null -> "$formatId+ba[ext=$audioExt]/$formatId+ba/$formatId/bv*[ext=$container]+ba[ext=$audioExt]/bv*+ba/b"
             height != null ->
                 "bv*[height<=$height][ext=$container]+ba[ext=$audioExt]/" +
                     "bv*[height<=$height]+ba/b[height<=$height]/b"

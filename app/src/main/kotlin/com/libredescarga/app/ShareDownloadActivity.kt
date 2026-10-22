@@ -42,7 +42,10 @@ class ShareDownloadActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
         )
+        val requestNotifications = notificationPermissionRequester()
         if (!acceptIntent(intent)) return
+        // Opcional: permite ver el avance de la descarga en las notificaciones.
+        requestNotifications()
 
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()

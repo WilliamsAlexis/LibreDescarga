@@ -8,6 +8,9 @@
     <string name="downloader_progress_percent">%1$d %%</string>
     <string name="downloader_progress_speed">%1$d %% · %2$s/s</string>
     <string name="downloader_completed">Descarga completada</string>
+    <string name="downloader_completed_video">Video descargado</string>
+    <string name="downloader_completed_audio">Música descargada</string>
+    <string name="downloader_completed_image">Imagen descargada</string>
     <string name="downloader_completed_private">Guardada en la carpeta privada</string>
     <string name="downloader_failed">La descarga falló</string>
     <string name="downloader_action_pause">Pausar</string>

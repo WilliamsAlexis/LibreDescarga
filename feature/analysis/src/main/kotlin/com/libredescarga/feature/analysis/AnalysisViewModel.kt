@@ -110,9 +110,11 @@ class AnalysisViewModel @AssistedInject constructor(
     // Si no, se muestra el error original.
     private suspend fun errorOrImage(error: MediaError): AnalysisUiState {
         Log.w(TAG, "No se pudo analizar el enlace", error)
-        // Los sitios de video (YouTube...) nunca se resuelven con su miniatura: se muestra el error real.
-        val isVideoSite = UrlValidator.hostOf(url)?.let { DomainMatcher.matches(it, VIDEO_SITES) != null } == true
-        if (!isVideoSite && (error is MediaError.Unsupported || error is MediaError.Unknown)) {
+        // Los sitios de video (YouTube, TikTok, Facebook...) nunca se resuelven con su miniatura: se muestra el error real.
+        val host = UrlValidator.hostOf(url)
+        val isVideoSite = host?.let { DomainMatcher.matches(it, VIDEO_SITES) != null } == true
+        val isImageSite = host?.let { DomainMatcher.matches(it, IMAGE_SITES) != null } == true
+        if (!isVideoSite && (error is MediaError.Unsupported || (isImageSite && error is MediaError.Unknown))) {
             val image = runCatching { pageImages.mainImageOf(url) }.getOrNull()
             val request = image?.let { ImageDownloads.request(it, null) }
             if (request != null) {
@@ -328,7 +330,12 @@ class AnalysisViewModel @AssistedInject constructor(
     companion object {
         private const val TAG = "AnalysisViewModel"
         private const val DEFAULT_MAX_HEIGHT = 1080
-        private val VIDEO_SITES = listOf("youtube.com", "youtu.be", "youtube-nocookie.com")
+        private val VIDEO_SITES = listOf(
+            "youtube.com", "youtu.be", "youtube-nocookie.com", "tiktok.com", "facebook.com", "fb.watch", "fb.com",
+            "instagram.com", "twitter.com", "x.com", "vimeo.com", "dailymotion.com", "twitch.tv", "reddit.com",
+        )
+        // Páginas donde un enlace sin video suele ser una imagen (por ejemplo, un pin de Pinterest).
+        private val IMAGE_SITES = listOf("pinterest.com", "pin.it", "pinimg.com", "imgur.com", "flickr.com")
 
         internal fun initialSingle(info: MediaInfo, settings: UserSettings): AnalysisUiState.Single {
             val maxHeight = settings.defaultVideoQuality.maxHeight ?: DEFAULT_MAX_HEIGHT

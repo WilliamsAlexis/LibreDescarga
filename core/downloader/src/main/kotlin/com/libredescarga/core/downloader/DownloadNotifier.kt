@@ -98,7 +98,7 @@ class DownloadNotifier @Inject constructor(
             downloadId,
             NotificationCompat.Builder(context, CHANNEL_DONE)
                 .setSmallIcon(R.drawable.ic_stat_download)
-                .setContentTitle(context.getString(R.string.downloader_completed))
+                .setContentTitle(context.getString(completedTitle(mimeType)))
                 .setContentText(title)
                 .setAutoCancel(true)
                 .setContentIntent(activityIntent(downloadId, REQUEST_OPEN, Intent.createChooser(open, title)))
@@ -106,6 +106,14 @@ class DownloadNotifier @Inject constructor(
                 .addAction(0, context.getString(R.string.downloader_action_share), activityIntent(downloadId, REQUEST_SHARE, Intent.createChooser(share, title)))
                 .build(),
         )
+    }
+
+    /** "Video descargado", "Música descargada" o "Imagen descargada" según el tipo de archivo. */
+    private fun completedTitle(mimeType: String): Int = when {
+        mimeType.startsWith("video/") -> R.string.downloader_completed_video
+        mimeType.startsWith("audio/") -> R.string.downloader_completed_audio
+        mimeType.startsWith("image/") -> R.string.downloader_completed_image
+        else -> R.string.downloader_completed
     }
 
     /** Descarga guardada en la carpeta privada: el aviso no ofrece abrir ni compartir fuera de la app. */

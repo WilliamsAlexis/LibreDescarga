@@ -72,6 +72,8 @@ class YtDlpEngine @Inject constructor(
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (prefs.getLong(KEY_ENGINE_FILES_VERSION, -1L) == appVersionCode()) return
         File(context.noBackupFilesDir, ENGINE_DIR).deleteRecursively()
+        // El yt-dlp incluido en la app es viejo: se fuerza actualizarlo en el próximo arranque.
+        prefs.edit().remove(KEY_LAST_UPDATE_CHECK).apply()
     }
 
     private fun markEngineFilesValid() {
@@ -108,6 +110,19 @@ class YtDlpEngine @Inject constructor(
     ) {
         initialize()
         val request = YoutubeDLRequest(url).addCommands(options)
+        try {
+            runDownload(processId, request, onProgress)
+        } catch (error: MediaError) {
+            // Extractor roto por un cambio del sitio (TikTok, Facebook...): se actualiza yt-dlp y se reintenta una vez.
+            if ((error is MediaError.Unknown || error is MediaError.Unsupported) && updateForRetry()) {
+                runDownload(processId, YoutubeDLRequest(url).addCommands(options), onProgress)
+            } else {
+                throw error
+            }
+        }
+    }
+
+    private suspend fun runDownload(processId: String, request: YoutubeDLRequest, onProgress: (EngineProgress) -> Unit) {
         execute(processId, request) { percent, eta, line ->
             onProgress(ProgressLineParser.parse(percent, eta, line))
         }
@@ -158,13 +173,45 @@ class YtDlpEngine @Inject constructor(
     private companion object {
         const val PREFS_NAME = "engine_prefs"
         const val KEY_LAST_UPDATE_CHECK = "last_update_check"
+        const val KEY_LAST_FORCED_UPDATE = "last_forced_update"
+        const val FORCED_UPDATE_INTERVAL_MS = 6L * 60 * 60 * 1000
         const val KEY_ENGINE_FILES_VERSION = "engine_files_version"
         const val ENGINE_DIR = "youtubedl-android"
         const val WEEK_MS = 7L * 24 * 60 * 60 * 1000
     }
 
+    /**
+     * Si yt-dlp no logra leer el enlace (sitios como TikTok o Facebook cambian seguido y rompen sus extractores),
+     * se actualiza el motor y se reintenta una vez. Como máximo una actualización forzada cada 6 horas.
+     */
     private suspend fun runJson(target: String, options: List<String>): JsonObject {
         initialize()
+        return try {
+            runJsonOnce(target, options)
+        } catch (error: MediaError) {
+            if ((error is MediaError.Unknown || error is MediaError.Unsupported) && updateForRetry()) {
+                runJsonOnce(target, options)
+            } else {
+                throw error
+            }
+        }
+    }
+
+    private suspend fun updateForRetry(): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val now = System.currentTimeMillis()
+        if (now - prefs.getLong(KEY_LAST_FORCED_UPDATE, 0L) < FORCED_UPDATE_INTERVAL_MS) return false
+        prefs.edit().putLong(KEY_LAST_FORCED_UPDATE, now).apply()
+        return try {
+            update() == EngineUpdateResult.UPDATED
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private suspend fun runJsonOnce(target: String, options: List<String>): JsonObject {
         val request = YoutubeDLRequest(target).addCommands(options)
         val response = execute(UUID.randomUUID().toString(), request, callback = null)
         val line = response.out.lineSequence().map { it.trim() }.lastOrNull { it.startsWith("{") }
