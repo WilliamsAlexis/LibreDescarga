@@ -8,5 +8,4 @@ android {
 
 dependencies {
     implementation(projects.core.security)
-    implementation(libs.androidx.appcompat)
 }

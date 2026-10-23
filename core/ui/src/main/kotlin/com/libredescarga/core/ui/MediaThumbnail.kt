@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.libredescarga.core.designsystem.icon.LibreIcons
+import com.libredescarga.core.model.AnalisisPerf
 
 /** Miniatura 16:9 de internet con la duración en una esquina. Muestra un ícono si no hay imagen. */
 @Composable
@@ -33,11 +35,19 @@ fun MediaThumbnail(
         contentAlignment = Alignment.Center,
     ) {
         if (url != null) {
+            // Diagnóstico: cuánto tarda en llegar la miniatura desde internet.
+            val loadStart = remember(url) { System.nanoTime() }
             SubcomposeAsyncImage(
                 model = url,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 error = { PlaceholderIcon(LibreIcons.Library) },
+                onSuccess = {
+                    AnalisisPerf.duration("miniatura: descarga y decodificación (Coil)", (System.nanoTime() - loadStart) / 1_000_000, AnalisisPerf.hostOf(url))
+                },
+                onError = {
+                    AnalisisPerf.duration("miniatura: error al cargar", (System.nanoTime() - loadStart) / 1_000_000, AnalisisPerf.hostOf(url))
+                },
             )
         } else {
             PlaceholderIcon(LibreIcons.Library)

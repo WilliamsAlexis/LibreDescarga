@@ -104,4 +104,23 @@ class ImageDownloadsTest {
         assertNull(ImageDownloads.request("file:///sdcard/a.jpg"))
         assertNull(ImageDownloads.request("no es un enlace"))
     }
+
+    @Test
+    fun `reconoce paginas que declaran un video`() {
+        val conVideo = """<meta property="og:image" content="https://a/p.jpg"><meta property="og:video" content="https://a/v.mp4">"""
+        val tipoVideo = """<meta property="og:type" content="video.other"><meta property="og:image" content="https://a/p.jpg">"""
+        val reproductor = """<meta name="twitter:player" content="https://a/embed">"""
+        assertTrue(ImageDownloads.isVideoPage(conVideo))
+        assertTrue(ImageDownloads.isVideoPage(tipoVideo))
+        assertTrue(ImageDownloads.isVideoPage(reproductor))
+    }
+
+    @Test
+    fun `una pagina de solo imagen no es de video`() {
+        val soloImagen = """<meta property="og:type" content="article"><meta property="og:image" content="https://a/p.jpg">"""
+        val videoVacio = """<meta property="og:video" content="">"""
+        assertFalse(ImageDownloads.isVideoPage(soloImagen))
+        assertFalse(ImageDownloads.isVideoPage(videoVacio))
+        assertFalse(ImageDownloads.isVideoPage("<html></html>"))
+    }
 }

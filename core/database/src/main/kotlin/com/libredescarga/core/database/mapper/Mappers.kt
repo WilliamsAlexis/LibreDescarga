@@ -10,7 +10,6 @@ import com.libredescarga.core.model.MediaKind
 import com.libredescarga.core.model.SearchProvider
 import com.libredescarga.core.model.Site
 import com.libredescarga.core.model.SubtitleSelection
-import com.libredescarga.core.model.TrimRange
 import com.libredescarga.core.model.VideoContainer
 import com.libredescarga.core.model.VideoSelection
 
@@ -38,7 +37,6 @@ fun DownloadEntity.toRequest(): DownloadRequest = DownloadRequest(
     subtitle = subtitleLanguage?.let {
         SubtitleSelection(languageCode = it, isAutomatic = subtitleAutomatic, embed = subtitleEmbed)
     },
-    trim = trimStartSeconds?.let { TrimRange(startSeconds = it, endSeconds = trimEndSeconds) },
     fileName = fileName,
     estimatedBytes = estimatedBytes,
 )
@@ -77,8 +75,9 @@ fun DownloadRequest.toEntity(id: String, createdAt: Long, priority: Int = 0): Do
     subtitleLanguage = subtitle?.languageCode,
     subtitleAutomatic = subtitle?.isAutomatic ?: false,
     subtitleEmbed = subtitle?.embed ?: false,
-    trimStartSeconds = trim?.startSeconds,
-    trimEndSeconds = trim?.endSeconds,
+    // Columnas heredadas del antiguo recorte: ya no se usan (quitarlas exige una migración de la base de datos).
+    trimStartSeconds = null,
+    trimEndSeconds = null,
     fileName = fileName,
     estimatedBytes = estimatedBytes,
     status = DownloadStatus.QUEUED.name,

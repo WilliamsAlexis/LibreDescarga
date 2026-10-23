@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,8 +40,11 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.libredescarga.core.designsystem.icon.LibreIcons
+import com.libredescarga.core.model.AnalisisPerf
+import com.libredescarga.core.model.LinkPreview
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.ui.userMessage
+import com.libredescarga.feature.analysis.component.MediaHeader
 import com.libredescarga.feature.analysis.component.PlaylistContent
 import com.libredescarga.feature.analysis.component.SingleMediaContent
 import kotlinx.coroutines.launch
@@ -61,6 +64,19 @@ fun MediaAnalysisSheet(
         factory.create(url)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val progress by viewModel.progress.collectAsStateWithLifecycle()
+    // Diagnóstico: tiempo desde que se crea la hoja hasta que se compone cada contenido (cargando, formatos, error).
+    val sheetStart = remember(url) {
+        AnalisisPerf.mark("UI: hoja de análisis creada", AnalisisPerf.hostOf(url))
+        System.nanoTime()
+    }
+    LaunchedEffect(uiState::class) {
+        AnalisisPerf.duration(
+            phase = "UI: contenido compuesto (${uiState.perfLabel()}) desde que se abrió la hoja",
+            millis = (System.nanoTime() - sheetStart) / 1_000_000,
+            detail = AnalisisPerf.hostOf(url),
+        )
+    }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val currentOnDismiss by rememberUpdatedState(onDismiss)
@@ -90,7 +106,9 @@ fun MediaAnalysisSheet(
         sheetState = sheetState,
     ) {
         when (val state = uiState) {
-            AnalysisUiState.Loading -> LoadingContent(url)
+            AnalysisUiState.Loading -> LoadingContent(url, progress)
+
+            is AnalysisUiState.Preview -> PreviewContent(state.preview, progress)
 
             is AnalysisUiState.Error -> ErrorContent(
                 message = state.error.userMessage(),
@@ -100,6 +118,7 @@ fun MediaAnalysisSheet(
             )
 
             is AnalysisUiState.Single -> SingleMediaContent(
+                analysisProgress = progress,
                 state = state,
                 submitError = submitError?.userMessage(),
                 onTabSelected = viewModel::onTabSelected,
@@ -107,9 +126,6 @@ fun MediaAnalysisSheet(
                 onAudioSelected = viewModel::onAudioSelected,
                 onSubtitleSelected = viewModel::onSubtitleSelected,
                 onEmbedSubtitleChange = viewModel::onEmbedSubtitleChange,
-                onFileNameChange = viewModel::onFileNameChange,
-                onTrimStartChange = viewModel::onTrimStartChange,
-                onTrimEndChange = viewModel::onTrimEndChange,
                 onDownload = { requireStorage(viewModel::onDownload) },
                 onQuickDownload = { requireStorage(viewModel::onQuickDownload) },
             )
@@ -132,7 +148,7 @@ private fun MediaError.isRetryable(): Boolean =
     this is MediaError.Network || this is MediaError.Unknown || this is MediaError.Unavailable || this is MediaError.BotCheck
 
 @Composable
-private fun LoadingContent(url: String) {
+private fun LoadingContent(url: String, progress: Float) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,9 +157,9 @@ private fun LoadingContent(url: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     ) {
-        CircularProgressIndicator()
+        LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
         Text(
-            text = stringResource(R.string.analysis_loading),
+            text = stringResource(R.string.analysis_loading_percent, AnalysisProgress.percent(progress)),
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
@@ -215,6 +231,42 @@ private fun rememberLegacyStorageGate(): (() -> Unit) -> Unit {
         } else {
             pending = action
             launcher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+}
+
+/** Nombre legible del contenido para los registros de AnalisisPerf (R8 ofusca los nombres de clase en release). */
+private fun AnalysisUiState.perfLabel(): String = when (this) {
+    AnalysisUiState.Loading -> "cargando"
+    is AnalysisUiState.Preview -> "vista previa"
+    is AnalysisUiState.Error -> "error"
+    is AnalysisUiState.Single -> "formatos de un elemento"
+    is AnalysisUiState.Playlist -> "lista"
+}
+
+/** Mientras se analiza: título, autor y miniatura ya conocidos (YouTube y TikTok), con el progreso debajo. */
+@Composable
+private fun PreviewContent(preview: LinkPreview, progress: Float) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 240.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
+    ) {
+        MediaHeader(
+            title = preview.title,
+            subtitle = preview.uploader,
+            details = null,
+            thumbnailUrl = preview.thumbnailUrl,
+            durationSeconds = null,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+            Text(
+                text = stringResource(R.string.analysis_loading_percent, AnalysisProgress.percent(progress)),
+                style = MaterialTheme.typography.titleSmall,
+            )
         }
     }
 }

@@ -15,12 +15,6 @@ object AppConfig {
     /** Enlace que se muestra y se abre en el navegador externo o en la app de PayPal. */
     const val DONATION_URL = "https://paypal.me/alexis031298"
 
-    /**
-     * Enlace de respaldo, solo para uso interno si PayPal.Me deja de funcionar.
-     * NUNCA se muestra en la interfaz.
-     */
-    const val DONATION_FALLBACK_URL = "https://www.paypal.com/paypalme/alexis031298"
-
     /** Descargas completadas tras las que se muestra (una sola vez) el mensaje de apoyo. */
     const val DONATION_PROMPT_THRESHOLD = 20
 

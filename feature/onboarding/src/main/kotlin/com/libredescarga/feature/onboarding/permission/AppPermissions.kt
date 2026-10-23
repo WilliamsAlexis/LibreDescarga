@@ -26,8 +26,17 @@ enum class AppPermission(val required: Boolean = true) {
 
 internal object AppPermissions {
 
-    /** Permisos de ejecución del grupo "archivos" según la versión de Android. */
+    /**
+     * Permisos de ejecución del grupo "archivos" según la versión de Android. En Android 14+ se pide también el acceso
+     * parcial (el usuario puede elegir "Seleccionar fotos y videos" en lugar de dar acceso a todo).
+     */
     fun storagePermissions(): Array<String> = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> arrayOf(
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+        )
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> arrayOf(
             Manifest.permission.READ_MEDIA_VIDEO,
             Manifest.permission.READ_MEDIA_AUDIO,
@@ -40,8 +49,24 @@ internal object AppPermissions {
         )
     }
 
+    /**
+     * Android 14+: con acceso parcial a fotos y videos ("Seleccionar fotos y videos") solo queda concedido
+     * READ_MEDIA_VISUAL_USER_SELECTED; eso basta para usar la app (las descargas se guardan sin permiso con MediaStore).
+     * Sin esta regla, quien eligiera acceso parcial vería la pantalla de permisos para siempre.
+     */
+    private fun storageGranted(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val audio = context.hasRuntime(Manifest.permission.READ_MEDIA_AUDIO)
+            val full = context.hasRuntime(Manifest.permission.READ_MEDIA_VIDEO) &&
+                context.hasRuntime(Manifest.permission.READ_MEDIA_IMAGES)
+            val partial = context.hasRuntime(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            return audio && (full || partial)
+        }
+        return storagePermissions().all { context.hasRuntime(it) }
+    }
+
     fun isGranted(context: Context, permission: AppPermission): Boolean = when (permission) {
-        AppPermission.STORAGE -> storagePermissions().all { context.hasRuntime(it) }
+        AppPermission.STORAGE -> storageGranted(context)
         AppPermission.NOTIFICATIONS ->
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                 context.hasRuntime(Manifest.permission.POST_NOTIFICATIONS)

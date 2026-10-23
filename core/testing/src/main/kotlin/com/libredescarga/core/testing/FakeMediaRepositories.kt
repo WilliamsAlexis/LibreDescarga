@@ -50,6 +50,22 @@ class FakeMediaExtractorRepository : MediaExtractorRepository {
         return analysisResult
     }
 
+    /** Si se asigna, el análisis con avances emite estas actualizaciones en orden (por ejemplo, parcial y completa). */
+    var progressiveUpdates: List<com.libredescarga.core.model.AnalysisUpdate>? = null
+    var progressiveGate: CompletableDeferred<Unit>? = null
+
+    override fun analyzeProgressive(url: String): Flow<com.libredescarga.core.model.AnalysisUpdate> =
+        progressiveUpdates?.let { updates ->
+            kotlinx.coroutines.flow.flow {
+                updates.forEachIndexed { index, update ->
+                    // La última actualización espera a que la prueba lo permita, para revisar el estado intermedio.
+                    if (index > 0 && index == updates.lastIndex) progressiveGate?.await()
+                    emit(update)
+                }
+            }
+        }
+            ?: kotlinx.coroutines.flow.flow { emit(com.libredescarga.core.model.AnalysisUpdate(analyze(url), isComplete = true)) }
+
     override suspend fun search(query: String, provider: SearchProvider, limit: Int): List<MediaEntry> {
         lastSearch = query to provider
         searchError?.let { throw it }
@@ -146,6 +162,9 @@ class FakeSiteRepository(initial: List<Site> = emptyList()) : SiteRepository {
 /** Buscador de imagen principal de mentira para las pruebas: devuelve la imagen que se le indique (o null). */
 class FakePageImageResolver : com.libredescarga.core.domain.repository.PageImageResolver {
     var image: String? = null
+    /** Imagen que devuelve [imageOnlyOf] (null = la página tiene video o no hay imagen). */
+    var imageOnly: String? = null
+    var preview: com.libredescarga.core.model.LinkPreview? = null
     var lastPage: String? = null
         private set
 
@@ -153,6 +172,13 @@ class FakePageImageResolver : com.libredescarga.core.domain.repository.PageImage
         lastPage = pageUrl
         return image
     }
+
+    override suspend fun imageOnlyOf(pageUrl: String): String? {
+        lastPage = pageUrl
+        return imageOnly
+    }
+
+    override suspend fun previewOf(url: String): com.libredescarga.core.model.LinkPreview? = preview
 }
 
 /** Consulta de tamaños de mentira para las pruebas: responde con los tamaños que se le indiquen. */

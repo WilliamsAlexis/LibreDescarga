@@ -12,6 +12,7 @@ import com.libredescarga.core.domain.usecase.ImageDownloads
 import com.libredescarga.core.domain.usecase.ResolveSearchInputUseCase
 import com.libredescarga.core.domain.usecase.SearchInput
 import com.libredescarga.core.domain.usecase.SearchMediaUseCase
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.model.AudioFormat
 import com.libredescarga.core.model.MediaEntry
 import com.libredescarga.core.model.MediaError
@@ -221,6 +222,7 @@ class HomeViewModel @Inject constructor(
 
     // Abre la hoja que analiza el enlace. Si el enlace es directamente una imagen, se descarga sin analizar.
     private fun openAnalysis(url: String) {
+        AnalisisPerf.mark("entrada: Inicio abre el análisis (pegado, portapapeles, compartido o resultado)", AnalisisPerf.hostOf(url))
         val imageRequest = if (ImageDownloads.isImageUrl(url)) ImageDownloads.request(url) else null
         if (imageRequest == null) {
             local.update { it.copy(analysisUrl = url) }

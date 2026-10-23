@@ -41,7 +41,6 @@ object ImageDownloads {
             video = null,
             audioFormat = null,
             subtitle = null,
-            trim = null,
             fileName = FileNameSanitizer.sanitize(title, fallback = DEFAULT_NAME),
         )
     }
@@ -84,6 +83,24 @@ object ImageDownloads {
             else -> unescaped
         }
         return (UrlValidator.validate(absolute) as? UrlValidator.Result.Valid)?.url
+    }
+
+    private val VIDEO_META_NAMES = setOf(
+        "og:video", "og:video:url", "og:video:secure_url", "twitter:player", "twitter:player:stream",
+    )
+
+    /**
+     * Indica si la página declara un video (etiquetas og:video, twitter:player o og:type "video…").
+     * Una página sin video y con imagen principal se puede resolver sin yt-dlp.
+     */
+    fun isVideoPage(html: String): Boolean {
+        for (tag in META_TAG.findAll(html)) {
+            val name = META_NAME.find(tag.value)?.groupValues?.get(1)?.lowercase() ?: continue
+            val content = META_CONTENT.find(tag.value)?.groupValues?.get(1)?.trim().orEmpty()
+            if (name in VIDEO_META_NAMES && content.isNotEmpty()) return true
+            if (name == "og:type" && content.startsWith("video", ignoreCase = true)) return true
+        }
+        return false
     }
 
     private const val DEFAULT_NAME = "imagen"

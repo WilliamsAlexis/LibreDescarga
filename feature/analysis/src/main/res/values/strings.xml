@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="analysis_loading">Analizando enlace…</string>
+    <string name="analysis_loading_more">Buscando más calidades… %1$d %%</string>
+    <string name="analysis_loading_percent">Analizando enlace… %1$d %%</string>
     <string name="analysis_close">Cerrar</string>
     <string name="analysis_retry">Reintentar</string>
     <string name="analysis_tab_video">Video</string>
@@ -18,15 +19,6 @@
     <string name="analysis_subtitles_embed_on">Los subtítulos irán dentro del archivo de video.</string>
     <string name="analysis_subtitles_embed_off">Se guardará un archivo SRT aparte en Download/%1$s.</string>
 
-    <string name="analysis_more_options">Nombre, carpeta y recorte</string>
-    <string name="analysis_file_name">Nombre del archivo</string>
-    <string name="analysis_destination_video">Se guardará en Movies/%1$s</string>
-    <string name="analysis_destination_audio">Se guardará en Music/%1$s</string>
-    <string name="analysis_trim">Recortar</string>
-    <string name="analysis_trim_start">Inicio</string>
-    <string name="analysis_trim_end">Fin</string>
-    <string name="analysis_trim_hint">Opcional. Escribe minutos:segundos (por ejemplo, 1:30).</string>
-    <string name="analysis_trim_error">El recorte no es válido: revisa que el inicio sea menor que el fin y que estén dentro de la duración.</string>
 
     <string name="analysis_playlist_quality">Calidad para todos</string>
     <string name="analysis_playlist_select_all">Seleccionar todos</string>

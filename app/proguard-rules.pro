@@ -44,3 +44,14 @@
 -keep class org.apache.commons.io.** { *; }
 -dontwarn org.apache.commons.compress.**
 -dontwarn org.apache.commons.io.**
+
+# NewPipe Extractor (vía rápida de YouTube): Rhino ejecuta el JavaScript del reproductor y se carga por reflexión.
+-keep class org.mozilla.javascript.** { *; }
+-keep class org.mozilla.classfile.ClassFileWriter
+-dontwarn org.mozilla.javascript.tools.**
+-dontwarn org.mozilla.javascript.engine.**
+-dontwarn javax.script.**
+# Mensajes protobuf "lite" que NewPipe usa con YouTube (se leen por reflexión).
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+# Rhino trae soporte para "invokedynamic" de Java de escritorio (jdk.dynalink); en Android usa el modo interpretado.
+-dontwarn jdk.dynalink.**

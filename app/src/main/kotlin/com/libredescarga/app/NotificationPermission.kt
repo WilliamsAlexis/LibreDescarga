@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 
 /**
  * Prepara la petición del permiso de notificaciones (avance y aviso de descarga terminada), que no es obligatorio.
@@ -27,7 +28,7 @@ internal fun ComponentActivity.notificationPermissionRequester(): () -> Unit {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val requests = prefs.getInt(KEY_REQUESTS, 0)
         if (requests >= MAX_REQUESTS) return@request
-        prefs.edit().putInt(KEY_REQUESTS, requests + 1).apply()
+        prefs.edit { putInt(KEY_REQUESTS, requests + 1) }
         launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }

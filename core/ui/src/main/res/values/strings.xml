@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="core_ui_upcoming_feature">Esta sección estará disponible muy pronto.</string>
 
     <!-- Tamaños, vistas y calidades -->
     <string name="core_ui_size_estimated">≈ %1$s</string>

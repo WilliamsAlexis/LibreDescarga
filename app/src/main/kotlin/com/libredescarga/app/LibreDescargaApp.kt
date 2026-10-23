@@ -7,6 +7,7 @@ import com.libredescarga.core.downloader.DownloadQueueManager
 import com.libredescarga.core.engine.YtDlpEngine
 import dagger.hilt.android.HiltAndroidApp
 import android.util.Log
+import com.libredescarga.core.model.AnalisisPerf
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,9 +41,13 @@ class LibreDescargaApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // Diagnóstico de tiempos del análisis: se ve en logcat con la etiqueta "AnalisisPerf".
+        AnalisisPerf.sink = { Log.i(PERF_TAG, it) }
         // Prepara yt-dlp, Python y FFmpeg en segundo plano para que el primer análisis sea rápido.
         appScope.launch {
             runCatching { engine.initialize() }
+            // Arranca el proceso persistente de yt-dlp: los análisis ya no pagan arrancar Python (~2,5 s).
+            runCatching { engine.warmUp() }
             // Mantiene el motor al día (como máximo una vez por semana) para evitar errores como el 403 de YouTube.
             runCatching { engine.updateIfStale() }
         }
@@ -52,5 +57,6 @@ class LibreDescargaApp : Application(), Configuration.Provider {
 
     private companion object {
         const val TAG = "LibreDescargaApp"
+        const val PERF_TAG = "AnalisisPerf"
     }
 }

@@ -1,6 +1,7 @@
 package com.libredescarga.core.domain.repository
 
 import com.libredescarga.core.model.AnalysisResult
+import com.libredescarga.core.model.AnalysisUpdate
 import com.libredescarga.core.model.DownloadRequest
 import com.libredescarga.core.model.DownloadTask
 import com.libredescarga.core.model.MediaEntry
@@ -8,10 +9,17 @@ import com.libredescarga.core.model.SearchProvider
 import com.libredescarga.core.model.Site
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 
 /** Motor de extracción (yt-dlp). Lanza [com.libredescarga.core.model.MediaError] si falla. */
 interface MediaExtractorRepository {
     suspend fun analyze(url: String): AnalysisResult
+
+    /**
+     * Analiza mostrando avances: algunos sitios entregan primero un resultado rápido (parcial) y luego el completo.
+     * Por defecto solo emite el resultado completo.
+     */
+    fun analyzeProgressive(url: String): Flow<AnalysisUpdate> = flow { emit(AnalysisUpdate(analyze(url), isComplete = true)) }
 
     suspend fun search(query: String, provider: SearchProvider, limit: Int): List<MediaEntry>
 }

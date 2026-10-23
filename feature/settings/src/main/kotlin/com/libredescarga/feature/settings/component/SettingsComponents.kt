@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -192,9 +191,4 @@ internal fun BodyText(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodyMedium,
         modifier = modifier.padding(horizontal = 16.dp, vertical = 6.dp),
     )
-}
-
-@Composable
-internal fun SmallIcon(icon: ImageVector) {
-    Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
 }

@@ -5,7 +5,6 @@ import com.libredescarga.core.domain.player.SleepTimer
 import com.libredescarga.core.domain.player.VideoPlayback
 import com.libredescarga.core.domain.repository.FavoritesRepository
 import com.libredescarga.core.domain.repository.LibraryRepository
-import com.libredescarga.core.domain.repository.PlaybackPositionRepository
 import com.libredescarga.core.domain.repository.PlaylistRepository
 import com.libredescarga.core.model.FileOperationResult
 import com.libredescarga.core.model.LibraryMedia
@@ -100,20 +99,6 @@ class FakeFavoritesRepository : FavoritesRepository {
     override val favorites: Flow<Set<String>> = state
 
     override suspend fun toggle(uri: String) = state.update { if (uri in it) it - uri else it + uri }
-}
-
-class FakePlaybackPositionRepository : PlaybackPositionRepository {
-    val positions = mutableMapOf<String, Long>()
-
-    override suspend fun get(uri: String): Long? = positions[uri]
-
-    override suspend fun save(uri: String, positionMs: Long, durationMs: Long) {
-        positions[uri] = positionMs
-    }
-
-    override suspend fun clear(uri: String) {
-        positions.remove(uri)
-    }
 }
 
 /** Reproductor en memoria: refleja las órdenes en [state] sin reproducir nada. */

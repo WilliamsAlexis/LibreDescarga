@@ -6,6 +6,7 @@ import com.libredescarga.core.domain.repository.IncomingLinkRepository
 import com.libredescarga.core.domain.repository.UserPreferencesRepository
 import com.libredescarga.core.domain.usecase.ShouldShowOnboardingUseCase
 import com.libredescarga.core.model.UserSettings
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.security.UrlValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,6 +61,7 @@ class MainActivityViewModel @Inject constructor(
         if (text.isNullOrBlank()) return
         val candidate = UrlValidator.extractFirstUrl(text) ?: text
         val valid = UrlValidator.validate(candidate) as? UrlValidator.Result.Valid ?: return
+        AnalisisPerf.mark("entrada: enlace recibido por Compartir (app abierta)", AnalisisPerf.hostOf(valid.url))
         incomingLinks.submit(valid.url)
     }
 }

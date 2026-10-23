@@ -2,15 +2,21 @@ package com.libredescarga.core.downloader
 
 import com.libredescarga.core.domain.repository.PageImageResolver
 import com.libredescarga.core.domain.repository.RemoteFileSizeProbe
+import com.libredescarga.core.domain.usecase.AnalysisCacheKey
 import com.libredescarga.core.domain.usecase.ImageDownloads
+import com.libredescarga.core.model.LinkPreview
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.model.MediaError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.coroutineContext
@@ -52,15 +58,63 @@ class ImageFetcher @Inject constructor() : PageImageResolver, RemoteFileSizeProb
     /** Lee la página [pageUrl] (solo el inicio) y devuelve su imagen principal, o null si no tiene o no se pudo leer. */
     override suspend fun mainImageOf(pageUrl: String): String? = withContext(Dispatchers.IO) {
         try {
-            val html = request(pageUrl.toHttps()) { connection, _ ->
-                val type = connection.contentType?.lowercase().orEmpty()
-                if ("html" !in type) return@request null
-                readLimited(connection)
-            } ?: return@withContext null
+            val html = readHtml(pageUrl) ?: return@withContext null
             ImageDownloads.mainImageFromHtml(html, pageUrl.toHttps())
         } catch (error: MediaError) {
             null
         }
+    }
+
+    /** Como [mainImageOf], pero devuelve null si la página declara un video (lo analiza yt-dlp) o no tiene imagen. */
+    override suspend fun imageOnlyOf(pageUrl: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val html = readHtml(pageUrl) ?: return@withContext null
+            if (ImageDownloads.isVideoPage(html)) null else ImageDownloads.mainImageFromHtml(html, pageUrl.toHttps())
+        } catch (error: MediaError) {
+            null
+        }
+    }
+
+    /**
+     * Título, autor y miniatura de un video de YouTube o TikTok con su oEmbed público (respuesta pequeña, ~0,3 s).
+     * Para cualquier otro sitio, o si falla, devuelve null.
+     */
+    override suspend fun previewOf(url: String): LinkPreview? = withContext(Dispatchers.IO) {
+        val endpoint = oEmbedEndpoint(url) ?: return@withContext null
+        try {
+            val body = request(endpoint) { connection, _ -> readLimited(connection) } ?: return@withContext null
+            val json = JSONObject(body)
+            val title = json.optString("title").trim()
+            if (title.isEmpty()) return@withContext null
+            LinkPreview(
+                title = title,
+                uploader = json.optString("author_name").trim().takeIf { it.isNotEmpty() },
+                thumbnailUrl = json.optString("thumbnail_url").takeIf { it.startsWith("https://") },
+            )
+        } catch (error: MediaError) {
+            null
+        } catch (error: JSONException) {
+            null
+        }
+    }
+
+    private fun oEmbedEndpoint(url: String): String? {
+        val host = AnalisisPerf.hostOf(url).lowercase().removePrefix("www.")
+        val youtubeId = AnalysisCacheKey.of(url).takeIf { it.startsWith("youtube:") }?.removePrefix("youtube:")
+        return when {
+            youtubeId != null -> "https://www.youtube.com/oembed?format=json&url=" +
+                URLEncoder.encode("https://www.youtube.com/watch?v=$youtubeId", "UTF-8")
+            (host == "tiktok.com" || host.endsWith(".tiktok.com")) && "/video/" in url ->
+                "https://www.tiktok.com/oembed?url=" + URLEncoder.encode(url, "UTF-8")
+            else -> null
+        }
+    }
+
+    /** Lee el inicio de la página (solo HTML); null si la respuesta no es una página. */
+    private suspend fun readHtml(pageUrl: String): String? = request(pageUrl.toHttps()) { connection, _ ->
+        val type = connection.contentType?.lowercase().orEmpty()
+        if ("html" !in type) return@request null
+        readLimited(connection)
     }
 
     /** Pregunta al servidor cuánto pesa el archivo (petición HEAD, sin descargarlo). */
@@ -96,7 +150,14 @@ class ImageFetcher @Inject constructor() : PageImageResolver, RemoteFileSizeProb
         for (attempt in 0..MAX_REDIRECTS) {
             val connection = open(current, referer, method)
             try {
+                val hopStart = System.nanoTime()
                 val code = connection.responseCode
+                // Cada salto (incluidas las redirecciones de enlaces cortos) se registra por separado.
+                AnalisisPerf.duration(
+                    phase = "red: HTTP $method (conexión + cabeceras)",
+                    millis = (System.nanoTime() - hopStart) / 1_000_000,
+                    detail = "${AnalisisPerf.hostOf(current)}, código $code, salto $attempt",
+                )
                 when {
                     code in REDIRECT_CODES -> {
                         val location = connection.getHeaderField("Location") ?: throw MediaError.Unknown("Redirección inválida")

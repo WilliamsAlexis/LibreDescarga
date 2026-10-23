@@ -11,7 +11,6 @@ data class DownloadRequest(
     val video: VideoSelection?,
     val audioFormat: AudioFormat?,
     val subtitle: SubtitleSelection?,
-    val trim: TrimRange?,
     val fileName: String,
     /** Tamaño estimado en el análisis (para avisar si falta espacio). */
     val estimatedBytes: Long? = null,
@@ -34,9 +33,6 @@ data class SubtitleSelection(
     /** true = incrustar en el video; false = archivo SRT aparte. */
     val embed: Boolean,
 )
-
-/** Recorte en segundos. [endSeconds] nulo = hasta el final. */
-data class TrimRange(val startSeconds: Long, val endSeconds: Long?)
 
 /**
  * - [QUEUED]: en la cola de la app, esperando un hueco (límite de descargas simultáneas).

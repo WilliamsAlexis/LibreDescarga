@@ -57,7 +57,6 @@ import androidx.compose.material.icons.rounded.Backup
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Storage
@@ -68,12 +67,10 @@ import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Gavel
@@ -125,10 +122,8 @@ object LibreIcons {
     val Delete = Icons.Rounded.Delete
     val Bolt = Icons.Rounded.Bolt
     val ExpandMore = Icons.Rounded.ExpandMore
-    val ExpandLess = Icons.Rounded.ExpandLess
     val Error = Icons.Rounded.ErrorOutline
     val Edit = Icons.Rounded.Edit
-    val Language = Icons.Rounded.Language
     val Palette = Icons.Rounded.Palette
     val Storage = Icons.Rounded.Storage
     val Backup = Icons.Rounded.Backup
@@ -205,5 +200,4 @@ object LibreIcons {
     val SystemUpdate = Icons.Rounded.SystemUpdate
     val Granted = Icons.Rounded.CheckCircle
     val Legal = Icons.Rounded.Gavel
-    val WorkInProgress = Icons.Rounded.Construction
 }

@@ -12,11 +12,6 @@ import com.libredescarga.core.model.AccentColor
  * cumplen contraste AA (≥ 4,5:1).
  */
 
-// Marca
-val LibreTeal = Color(0xFF006A60)
-val LibreTealLight = Color(0xFF53DBC9)
-val LibreAmber = Color(0xFFFFC857)
-
 private val LightBase = lightColorScheme(
     primary = Color(0xFF006A60),
     onPrimary = Color(0xFFFFFFFF),

@@ -1,6 +1,7 @@
 package com.libredescarga.feature.analysis
 
 import com.libredescarga.core.model.AudioFormat
+import com.libredescarga.core.model.LinkPreview
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.MediaInfo
 import com.libredescarga.core.model.MediaKind
@@ -19,6 +20,9 @@ sealed interface AnalysisUiState {
 
     data object Loading : AnalysisUiState
 
+    /** Cargando, pero ya se conocen el título y la miniatura (vista previa casi instantánea de YouTube y TikTok). */
+    data class Preview(val preview: LinkPreview) : AnalysisUiState
+
     data class Error(val error: MediaError) : AnalysisUiState
 
     data class Single(
@@ -28,14 +32,16 @@ sealed interface AnalysisUiState {
         val selectedAudio: AudioFormat?,
         val subtitle: SubtitleTrack?,
         val embedSubtitle: Boolean,
-        val fileName: String,
-        val trimStart: String,
-        val trimEnd: String,
-        val trimError: Boolean,
         val quickDefault: QuickDefault?,
         val isSubmitting: Boolean,
         /** Espacio libre en el teléfono, para avisar si la descarga no cabe. */
         val availableBytes: Long? = null,
+        /** El análisis completo sigue en curso: se muestran las opciones rápidas y pronto llegan más calidades. */
+        val loadingMoreQualities: Boolean = false,
+        /** Lo que el usuario ya eligió a mano, para no pisarlo cuando llega el análisis completo. */
+        val tabTouched: Boolean = false,
+        val videoTouched: Boolean = false,
+        val audioTouched: Boolean = false,
     ) : AnalysisUiState {
         /** La descarga elegida parece no caber (necesita su tamaño dos veces: descarga y copia). */
         val lowStorage: Boolean
@@ -46,7 +52,7 @@ sealed interface AnalysisUiState {
             }
 
         val canDownload: Boolean
-            get() = !isSubmitting && !trimError && when (tab) {
+            get() = !isSubmitting && when (tab) {
                 MediaKind.VIDEO -> selectedVideo != null
                 MediaKind.AUDIO -> selectedAudio != null
                 MediaKind.IMAGE -> false // El análisis solo ofrece video y audio.

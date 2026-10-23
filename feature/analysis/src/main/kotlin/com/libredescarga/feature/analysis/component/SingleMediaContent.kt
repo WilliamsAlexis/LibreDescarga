@@ -1,6 +1,5 @@
 package com.libredescarga.feature.analysis.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -16,29 +15,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.libredescarga.core.config.AppConfig
 import com.libredescarga.core.designsystem.icon.LibreIcons
@@ -47,10 +39,10 @@ import com.libredescarga.core.model.MediaKind
 import com.libredescarga.core.model.SubtitleTrack
 import com.libredescarga.core.model.VideoOption
 import com.libredescarga.core.ui.estimatedSizeLabel
-import com.libredescarga.core.ui.formatDuration
 import com.libredescarga.core.ui.label
 import com.libredescarga.core.ui.qualityLabel
 import com.libredescarga.core.ui.viewCountLabel
+import com.libredescarga.feature.analysis.AnalysisProgress
 import com.libredescarga.feature.analysis.AnalysisUiState
 import com.libredescarga.feature.analysis.QuickDefault
 import com.libredescarga.feature.analysis.R
@@ -58,25 +50,22 @@ import java.util.Locale
 
 /**
  * Pantalla que se muestra cuando el enlace tiene UN solo video o audio.
- * Deja elegir la calidad o el formato, los subtítulos, el nombre del archivo y el recorte, y tiene el botón Descargar.
+ * Deja elegir la calidad o el formato y los subtítulos, y tiene el botón Descargar.
  */
 @Composable
 internal fun SingleMediaContent(
     state: AnalysisUiState.Single,
+    analysisProgress: Float = 0f,
     submitError: String?,
     onTabSelected: (MediaKind) -> Unit,
     onVideoSelected: (VideoOption) -> Unit,
     onAudioSelected: (AudioFormat) -> Unit,
     onSubtitleSelected: (SubtitleTrack?) -> Unit,
     onEmbedSubtitleChange: (Boolean) -> Unit,
-    onFileNameChange: (String) -> Unit,
-    onTrimStartChange: (String) -> Unit,
-    onTrimEndChange: (String) -> Unit,
     onDownload: () -> Unit,
     onQuickDownload: () -> Unit,
 ) {
     val info = state.info
-    var showAdvanced by rememberSaveable { mutableStateOf(false) }
     // Pestañas disponibles: solo se muestran Video y/o Audio si ese enlace ofrece opciones de ese tipo.
     val tabs = buildList {
         if (info.videoOptions.isNotEmpty()) add(MediaKind.VIDEO)
@@ -100,6 +89,23 @@ internal fun SingleMediaContent(
                     durationSeconds = info.durationSeconds,
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
+            }
+
+            // El análisis completo sigue en marcha: ya se pueden descargar las opciones rápidas, y pronto llegan más calidades.
+            if (state.loadingMoreQualities) {
+                item {
+                    Column(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        LinearProgressIndicator(progress = { analysisProgress }, modifier = Modifier.fillMaxWidth())
+                        Text(
+                            text = stringResource(R.string.analysis_loading_more, AnalysisProgress.percent(analysisProgress)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
 
             // Botón de descarga rápida con la calidad que el usuario eligió por defecto en Ajustes.
@@ -197,28 +203,6 @@ internal fun SingleMediaContent(
                 MediaKind.IMAGE -> Unit // El análisis solo ofrece video y audio.
             }
 
-            item {
-                // Botón que muestra u oculta las opciones avanzadas (nombre y recorte).
-                TextButton(onClick = { showAdvanced = !showAdvanced }) {
-                    Icon(
-                        imageVector = if (showAdvanced) LibreIcons.ExpandLess else LibreIcons.ExpandMore,
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.analysis_more_options))
-                }
-            }
-
-            item {
-                AnimatedVisibility(visible = showAdvanced) {
-                    AdvancedOptions(
-                        state = state,
-                        onFileNameChange = onFileNameChange,
-                        onTrimStartChange = onTrimStartChange,
-                        onTrimEndChange = onTrimEndChange,
-                    )
-                }
-            }
         }
 
         // Parte fija de abajo: avisos y botón Descargar.
@@ -333,63 +317,4 @@ private fun SubtitleTrack.displayName(): String {
         .replaceFirstChar { it.titlecase(Locale.getDefault()) }
         .ifBlank { code }
     return if (isAutomatic) stringResource(R.string.analysis_subtitles_automatic, language) else language
-}
-
-/** Opciones avanzadas: nombre del archivo, carpeta de destino y recorte por minutos y segundos. */
-@Composable
-private fun AdvancedOptions(
-    state: AnalysisUiState.Single,
-    onFileNameChange: (String) -> Unit,
-    onTrimStartChange: (String) -> Unit,
-    onTrimEndChange: (String) -> Unit,
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        // Campo para cambiar el nombre del archivo.
-        OutlinedTextField(
-            value = state.fileName,
-            onValueChange = onFileNameChange,
-            label = { Text(stringResource(R.string.analysis_file_name)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Text(
-            text = stringResource(
-                if (state.tab == MediaKind.VIDEO) R.string.analysis_destination_video else R.string.analysis_destination_audio,
-                AppConfig.DOWNLOAD_FOLDER_NAME,
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(stringResource(R.string.analysis_trim), style = MaterialTheme.typography.titleSmall)
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(
-                value = state.trimStart,
-                onValueChange = onTrimStartChange,
-                label = { Text(stringResource(R.string.analysis_trim_start)) },
-                placeholder = { Text("0:00") },
-                singleLine = true,
-                isError = state.trimError,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f),
-            )
-            OutlinedTextField(
-                value = state.trimEnd,
-                onValueChange = onTrimEndChange,
-                label = { Text(stringResource(R.string.analysis_trim_end)) },
-                placeholder = { Text(state.info.durationSeconds?.let(::formatDuration).orEmpty()) },
-                singleLine = true,
-                isError = state.trimError,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Text(
-            text = stringResource(if (state.trimError) R.string.analysis_trim_error else R.string.analysis_trim_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = if (state.trimError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
 }

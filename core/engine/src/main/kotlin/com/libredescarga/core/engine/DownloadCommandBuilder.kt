@@ -3,7 +3,6 @@ package com.libredescarga.core.engine
 import com.libredescarga.core.model.DownloadRequest
 import com.libredescarga.core.model.MediaKind
 import com.libredescarga.core.model.VideoContainer
-import java.util.Locale
 
 /** Ajustes del gestor que afectan a cómo se descarga. */
 data class DownloadTuning(
@@ -15,6 +14,8 @@ data class DownloadTuning(
 
 /** Traduce una [DownloadRequest] a argumentos de yt-dlp. Sin efectos secundarios: fácil de probar. */
 object DownloadCommandBuilder {
+
+    private const val LOW_QUALITY_MAX_HEIGHT = 360
 
     fun build(
         request: DownloadRequest,
@@ -40,12 +41,6 @@ object DownloadCommandBuilder {
             MediaKind.IMAGE -> error("Las imágenes no se descargan con yt-dlp")
         }
 
-        request.trim?.let { trim ->
-            add("--download-sections")
-            add("*${formatTime(trim.startSeconds)}-${trim.endSeconds?.let(::formatTime) ?: "inf"}")
-            add("--force-keyframes-at-cuts")
-        }
-
         add("--embed-metadata")
         add("-o")
         add("${outputDir.trimEnd('/')}/${escapeTemplate(request.fileName)}.%(ext)s")
@@ -65,7 +60,9 @@ object DownloadCommandBuilder {
             formatId != null -> "$formatId+ba[ext=$audioExt]/$formatId+ba/$formatId/bv*[ext=$container]+ba[ext=$audioExt]/bv*+ba/b"
             height != null ->
                 "bv*[height<=$height][ext=$container]+ba[ext=$audioExt]/" +
-                    "bv*[height<=$height]+ba/b[height<=$height]/b"
+                    "bv*[height<=$height]+ba/b[height<=$height]/" +
+                    // Una calidad baja (144p–360p) que el video no tiene baja al mínimo disponible, no al mejor.
+                    if (height <= LOW_QUALITY_MAX_HEIGHT) "wv*+wa/w" else "b"
             else -> "bv*[ext=$container]+ba[ext=$audioExt]/bv*+ba/b"
         }
         add("-f")
@@ -107,15 +104,4 @@ object DownloadCommandBuilder {
 
     /** yt-dlp interpreta "%" en la plantilla de salida: hay que duplicarlo. */
     fun escapeTemplate(name: String): String = name.replace("%", "%%")
-
-    fun formatTime(totalSeconds: Long): String {
-        val seconds = totalSeconds.coerceAtLeast(0)
-        return String.format(
-            Locale.ROOT,
-            "%02d:%02d:%02d",
-            seconds / 3600,
-            (seconds % 3600) / 60,
-            seconds % 60,
-        )
-    }
 }

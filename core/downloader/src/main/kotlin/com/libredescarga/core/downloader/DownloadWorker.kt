@@ -23,6 +23,7 @@ import com.libredescarga.core.model.MediaKind
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,6 +147,7 @@ class DownloadWorker @AssistedInject constructor(
     }
 
     /** Descarga una imagen y va guardando el progreso (en bytes) para mostrarlo en la lista de descargas. */
+    @OptIn(FlowPreview::class)
     private suspend fun fetchImage(downloadId: String, request: DownloadRequest, workDir: File) {
         val progress = MutableStateFlow<Pair<Long, Long?>?>(null)
         coroutineScope {
@@ -172,6 +174,7 @@ class DownloadWorker @AssistedInject constructor(
         }
     }
 
+    @OptIn(FlowPreview::class)
     private suspend fun runDownload(downloadId: String, request: DownloadRequest, args: List<String>) {
         val progress = MutableStateFlow<EngineProgress?>(null)
         coroutineScope {

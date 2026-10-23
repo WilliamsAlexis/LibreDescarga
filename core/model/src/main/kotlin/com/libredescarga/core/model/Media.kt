@@ -37,6 +37,11 @@ data class VideoOption(
     val container: VideoContainer,
     val hasAudio: Boolean,
     val estimatedBytes: Long?,
+    /**
+     * Calidad ofrecida de antemano (144p, 240p, 360p, 720p, 1080p) mientras llega el análisis completo: aún no se sabe si el
+     * video la tiene, así que al descargar se pide "hasta esta altura" y el motor elige el mejor formato disponible.
+     */
+    val isPreset: Boolean = false,
 )
 
 enum class VideoContainer(val extension: String) { MP4("mp4"), WEBM("webm") }
@@ -64,3 +69,16 @@ sealed interface AnalysisResult {
     data class Single(val info: MediaInfo) : AnalysisResult
     data class Playlist(val playlist: PlaylistInfo) : AnalysisResult
 }
+
+/**
+ * Avance de un análisis: [result] puede ser parcial (solo las calidades que se obtienen rápido) mientras
+ * [isComplete] sea false; el resultado completo llega después y lo reemplaza.
+ */
+data class AnalysisUpdate(val result: AnalysisResult, val isComplete: Boolean)
+
+/** Datos mínimos de un enlace (título, autor, miniatura) que se obtienen casi al instante, antes del análisis completo. */
+data class LinkPreview(
+    val title: String,
+    val uploader: String?,
+    val thumbnailUrl: String?,
+)

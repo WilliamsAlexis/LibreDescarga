@@ -10,6 +10,5 @@ android {
 dependencies {
     api(projects.core.model)
     implementation(projects.core.security)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
 }

@@ -5,7 +5,6 @@ import com.libredescarga.core.model.DownloadRequest
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.MediaKind
 import com.libredescarga.core.model.SubtitleSelection
-import com.libredescarga.core.model.TrimRange
 import com.libredescarga.core.model.VideoContainer
 import com.libredescarga.core.model.VideoSelection
 import org.junit.Assert.assertEquals
@@ -26,7 +25,6 @@ class EngineHelpersTest {
         video = VideoSelection(formatId = "137", maxHeight = null, container = VideoContainer.MP4, formatHasAudio = false),
         audioFormat = null,
         subtitle = null,
-        trim = null,
         fileName = "Mi video 100%",
     )
 
@@ -60,6 +58,15 @@ class EngineHelpersTest {
             args.valueOf("-f"),
         )
         assertEquals("webm", args.valueOf("--merge-output-format"))
+    }
+
+    @Test
+    fun `una calidad baja que el video no tiene baja al minimo y no al mejor`() {
+        val request = base.copy(video = VideoSelection(null, 144, VideoContainer.MP4, false))
+        assertEquals(
+            "bv*[height<=144][ext=mp4]+ba[ext=m4a]/bv*[height<=144]+ba/b[height<=144]/wv*+wa/w",
+            DownloadCommandBuilder.build(request, "/tmp").valueOf("-f"),
+        )
     }
 
     @Test
@@ -98,15 +105,11 @@ class EngineHelpersTest {
     }
 
     @Test
-    fun `recorte y límite de velocidad`() {
-        val request = base.copy(trim = TrimRange(65, 3725))
-        val args = DownloadCommandBuilder.build(request, "/tmp", DownloadTuning(concurrentFragments = 8, rateLimitKbps = 500))
-        assertEquals("*00:01:05-01:02:05", args.valueOf("--download-sections"))
+    fun `limite de velocidad y fragmentos en paralelo`() {
+        val args = DownloadCommandBuilder.build(base, "/tmp", DownloadTuning(concurrentFragments = 8, rateLimitKbps = 500))
         assertEquals("500K", args.valueOf("--limit-rate"))
         assertEquals("8", args.valueOf("--concurrent-fragments"))
-
-        val open = DownloadCommandBuilder.build(base.copy(trim = TrimRange(30, null)), "/tmp")
-        assertEquals("*00:00:30-inf", open.valueOf("--download-sections"))
+        assertTrue("--download-sections" !in args)
     }
 
     @Test

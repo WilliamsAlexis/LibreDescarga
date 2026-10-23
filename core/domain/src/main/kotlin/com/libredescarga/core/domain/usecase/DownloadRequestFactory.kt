@@ -47,7 +47,6 @@ object DownloadRequestFactory {
         video = null,
         audioFormat = null,
         subtitle = null,
-        trim = null,
         fileName = FileNameSanitizer.sanitize(entry.title),
     )
 }

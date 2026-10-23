@@ -21,7 +21,6 @@
     <!-- Descarga -->
     <string name="browser_download">Descargar</string>
     <string name="browser_download_count">Descargar (%1$d)</string>
-    <string name="browser_candidates_title">¿Qué quieres descargar?</string>
     <string name="browser_drm">Este contenido está protegido y no se puede descargar</string>
 
     <!-- Errores -->

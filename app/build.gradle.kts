@@ -12,8 +12,8 @@ plugins {
 // (El nombre visible se cambia en src/main/res/values/strings.xml â†’ app_name.)
 // ---------------------------------------------------------------------------
 val appPackage = "com.libredescarga.app"
-val appVersionCode = 5
-val appVersionName = "1.0.4"
+val appVersionCode = 6
+val appVersionName = "1.0.5"
 
 // Datos de firma, fuera del control de versiones (ver keystore.properties.example).
 val keystoreProperties = Properties().apply {
@@ -54,6 +54,11 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+    }
+
+    // NewPipe Extractor usa APIs de Java (java.time, java.nio...) que Android anterior a 13 no trae.
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -120,6 +125,7 @@ dependencies {
     implementation(libs.androidx.concurrent.futures.ktx)
     implementation(libs.androidx.hilt.work)
     implementation(libs.kotlinx.coroutines.android)
+    coreLibraryDesugaring(libs.desugar.jdk.libs.nio)
 
     testImplementation(projects.core.testing)
     testImplementation(libs.junit)

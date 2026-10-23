@@ -83,7 +83,6 @@ class ConvertToAudioUseCase @Inject constructor(
             video = null,
             audioFormat = format,
             subtitle = null,
-            trim = null,
             fileName = FileNameSanitizer.sanitize(media.title),
             estimatedBytes = media.durationMs / 1000 * (format.bitrateKbps ?: 192) * 125,
         )

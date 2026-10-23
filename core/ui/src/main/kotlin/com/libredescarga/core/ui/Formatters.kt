@@ -36,15 +36,3 @@ fun estimatedSizeLabel(bytes: Long?): String =
 @Composable
 fun viewCountLabel(views: Long): String =
     stringResource(R.string.core_ui_views, NumberFormat.getIntegerInstance().format(views))
-
-/**
- * Lee un tiempo escrito por el usuario: "90", "1:30" o "1:02:30".
- * Devuelve null si está vacío o no es válido.
- */
-fun parseTimeInput(text: String): Long? {
-    val parts = text.trim().takeIf { it.isNotEmpty() }?.split(':') ?: return null
-    if (parts.size > 3 || parts.any { it.isEmpty() || !it.all(Char::isDigit) || it.length > 5 }) return null
-    val numbers = parts.map { it.toLong() }
-    if (numbers.drop(1).any { it >= 60 }) return null
-    return numbers.fold(0L) { total, value -> total * 60 + value }
-}

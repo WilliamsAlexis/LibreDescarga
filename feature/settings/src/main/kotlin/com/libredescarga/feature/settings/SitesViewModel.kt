@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -85,9 +84,5 @@ class SitesViewModel @Inject constructor(
         viewModelScope.launch {
             preferences.setUserBlockedDomains(preferences.settings.first().userBlockedDomains - domain)
         }
-    }
-
-    fun onErrorShown() {
-        error.update { null }
     }
 }

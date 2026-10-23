@@ -4,7 +4,9 @@ import app.cash.turbine.test
 import com.libredescarga.core.domain.usecase.AnalyzeUrlUseCase
 import com.libredescarga.core.domain.usecase.EnqueueDownloadsUseCase
 import com.libredescarga.core.model.AnalysisResult
+import com.libredescarga.core.model.AnalysisUpdate
 import com.libredescarga.core.model.AudioFormat
+import com.libredescarga.core.model.LinkPreview
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.MediaKind
 import com.libredescarga.core.model.UserSettings
@@ -125,8 +127,6 @@ class AnalysisViewModelTest {
         assertEquals(1080, state.selectedVideo?.height)
         assertEquals(AudioFormat.MP3_320, state.selectedAudio)
         assertNull(state.quickDefault)
-        // El nombre propuesto es el título saneado (":" no está permitido en tarjetas SD).
-        assertEquals("Concierto libre_ grabación pública", state.fileName)
     }
 
     @Test
@@ -154,12 +154,10 @@ class AnalysisViewModelTest {
     }
 
     @Test
-    fun `descargar audio con subtítulos y recorte`() = runTest {
+    fun `descargar audio usa el titulo saneado como nombre`() = runTest {
         val viewModel = createViewModel()
         viewModel.onTabSelected(MediaKind.AUDIO)
         viewModel.onAudioSelected(AudioFormat.M4A)
-        viewModel.onTrimStartChange("0:30")
-        viewModel.onTrimEndChange("2:00")
 
         viewModel.events.test {
             viewModel.onDownload()
@@ -169,25 +167,9 @@ class AnalysisViewModelTest {
         val request = downloads.enqueued.single()
         assertEquals(MediaKind.AUDIO, request.kind)
         assertEquals(AudioFormat.M4A, request.audioFormat)
-        assertEquals(30L, request.trim?.startSeconds)
-        assertEquals(120L, request.trim?.endSeconds)
+        // El nombre propuesto es el título saneado (":" no está permitido en tarjetas SD).
+        assertEquals("Concierto libre_ grabación pública", request.fileName)
         assertNull(request.subtitle)
-    }
-
-    @Test
-    fun `un recorte inválido bloquea la descarga`() {
-        val viewModel = createViewModel()
-        viewModel.onTrimStartChange("3:00")
-        viewModel.onTrimEndChange("1:00")
-        assertTrue(viewModel.single().trimError)
-        assertFalse(viewModel.single().canDownload)
-
-        viewModel.onTrimEndChange("10:00") // más largo que el video (4:05)
-        assertTrue(viewModel.single().trimError)
-
-        viewModel.onTrimStartChange("")
-        viewModel.onTrimEndChange("")
-        assertFalse(viewModel.single().trimError)
     }
 
     @Test
@@ -258,5 +240,153 @@ class AnalysisViewModelTest {
         val viewModel = createViewModel("https://bloqueado.com/v/1")
         assertTrue((viewModel.uiState.value as AnalysisUiState.Error).error is MediaError.BlockedSite)
         assertNull(extractor.lastAnalyzedUrl)
+    }
+
+    @Test
+    fun `una pagina de imagen sin video se descarga sin llamar al motor`() = runTest {
+        pageImages.imageOnly = "https://i.pinimg.com/originals/aa/bb/foto.jpg"
+
+        val viewModel = createViewModel("https://www.pinterest.com/pin/456/")
+
+        val request = downloads.enqueued.single()
+        assertEquals(MediaKind.IMAGE, request.kind)
+        assertNull(extractor.lastAnalyzedUrl)
+        viewModel.events.test { assertEquals(AnalysisEvent.Queued(1), awaitItem()) }
+    }
+
+    @Test
+    fun `una pagina de Pinterest con video se analiza con el motor`() {
+        pageImages.imageOnly = null // la página declara un video
+
+        val viewModel = createViewModel("https://www.pinterest.com/pin/789/")
+
+        assertEquals("https://www.pinterest.com/pin/789/", extractor.lastAnalyzedUrl)
+        assertTrue(viewModel.uiState.value is AnalysisUiState.Single)
+        assertTrue(downloads.enqueued.isEmpty())
+    }
+
+    @Test
+    fun `muestra la vista previa mientras analiza y luego las opciones`() {
+        pageImages.preview = LinkPreview("Título rápido", "Canal", "https://i.ytimg.com/vi/x/hq.jpg")
+        extractor.analysisGate = CompletableDeferred()
+
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        assertEquals(AnalysisUiState.Preview(pageImages.preview!!), viewModel.uiState.value)
+
+        extractor.analysisGate!!.complete(Unit)
+        assertTrue(viewModel.uiState.value is AnalysisUiState.Single)
+    }
+
+    private val fastInfo = TestMedia.info.copy(videoOptions = listOf(TestMedia.video720), subtitles = emptyList())
+
+    private fun partialThenFull(gate: CompletableDeferred<Unit>) {
+        extractor.progressiveGate = gate
+        extractor.progressiveUpdates = listOf(
+            AnalysisUpdate(AnalysisResult.Single(fastInfo), isComplete = false),
+            AnalysisUpdate(AnalysisResult.Single(TestMedia.info), isComplete = true),
+        )
+    }
+
+    @Test
+    fun `muestra el resultado rapido y despues las calidades completas`() {
+        val gate = CompletableDeferred<Unit>()
+        partialThenFull(gate)
+
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        val partial = viewModel.single()
+        assertTrue(partial.loadingMoreQualities)
+        // Mientras llega el completo se ofrecen 1080p, 720p, 360p, 240p y 144p; solo el 720p es real (viene del análisis rápido).
+        assertEquals(listOf(1080, 720, 360, 240, 144), partial.info.videoOptions.map { it.height })
+        assertEquals(listOf(true, false, true, true, true), partial.info.videoOptions.map { it.isPreset })
+        assertEquals(1080, partial.selectedVideo?.height)
+
+        gate.complete(Unit)
+
+        val full = viewModel.single()
+        assertFalse(full.loadingMoreQualities)
+        assertEquals(listOf(1080, 720), full.info.videoOptions.map { it.height })
+        // El usuario no había elegido nada: la calidad por defecto vuelve a calcularse con la lista completa.
+        assertEquals(1080, full.selectedVideo?.height)
+    }
+
+    @Test
+    fun `lo que el usuario eligio no se pisa cuando llega el analisis completo`() {
+        val gate = CompletableDeferred<Unit>()
+        partialThenFull(gate)
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        viewModel.onVideoSelected(TestMedia.video720)
+        viewModel.onTabSelected(MediaKind.AUDIO)
+        viewModel.onAudioSelected(AudioFormat.M4A)
+        gate.complete(Unit)
+
+        val full = viewModel.single()
+        assertEquals(720, full.selectedVideo?.height)
+        assertEquals(MediaKind.AUDIO, full.tab)
+        assertEquals(AudioFormat.M4A, full.selectedAudio)
+        assertFalse(full.loadingMoreQualities)
+    }
+
+    @Test
+    fun `si el analisis completo falla se conserva el resultado rapido`() {
+        extractor.progressiveUpdates = listOf(AnalysisUpdate(AnalysisResult.Single(fastInfo), isComplete = false))
+
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        val state = viewModel.single()
+        assertEquals(listOf(1080, 720, 360, 240, 144), state.info.videoOptions.map { it.height })
+        assertFalse(state.loadingMoreQualities)
+    }
+
+    @Test
+    fun `descargar una calidad predefinida pide hasta esa altura y no un formato concreto`() = runTest {
+        partialThenFull(CompletableDeferred())
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        viewModel.onVideoSelected(viewModel.single().info.videoOptions.first { it.height == 1080 })
+        viewModel.events.test {
+            viewModel.onDownload()
+            awaitItem()
+        }
+
+        val selection = downloads.enqueued.single().video!!
+        assertNull(selection.formatId)
+        assertEquals(1080, selection.maxHeight)
+    }
+
+    @Test
+    fun `una calidad predefinida elegida pasa a la real al llegar el analisis completo`() {
+        val gate = CompletableDeferred<Unit>()
+        partialThenFull(gate)
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        viewModel.onVideoSelected(viewModel.single().info.videoOptions.first { it.height == 1080 })
+        assertTrue(viewModel.single().selectedVideo!!.isPreset)
+        gate.complete(Unit)
+
+        val selected = viewModel.single().selectedVideo!!
+        assertFalse(selected.isPreset)
+        assertEquals(TestMedia.video1080.formatId, selected.formatId)
+    }
+
+    @Test
+    fun `una calidad predefinida que el video no tiene vuelve a la de por defecto`() {
+        val gate = CompletableDeferred<Unit>()
+        partialThenFull(gate)
+        val viewModel = createViewModel("https://youtu.be/abcdefghijk")
+
+        viewModel.onVideoSelected(viewModel.single().info.videoOptions.first { it.height == 144 }) // el completo no la trae
+        gate.complete(Unit)
+
+        assertEquals(1080, viewModel.single().selectedVideo?.height)
+    }
+
+    @Test
+    fun `el progreso estimado llega al cien por ciento al terminar`() {
+        val viewModel = createViewModel()
+
+        assertEquals(1f, viewModel.progress.value, 0f)
     }
 }

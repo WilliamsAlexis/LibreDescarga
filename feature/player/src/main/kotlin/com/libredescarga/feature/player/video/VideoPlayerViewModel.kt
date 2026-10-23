@@ -102,8 +102,6 @@ class VideoPlayerViewModel @AssistedInject constructor(
         it.copy(locked = !it.locked, controlsVisible = it.locked) // Al bloquear se ocultan; al desbloquear aparecen.
     }
 
-    fun onOrientationSelected(mode: OrientationMode) = local.update { it.copy(orientation = mode) }
-
     fun onCycleOrientation() = local.update {
         val next = when (it.orientation) {
             OrientationMode.AUTO -> OrientationMode.LANDSCAPE

@@ -38,7 +38,7 @@ class GithubClient @Inject constructor() {
     suspend fun fetchText(url: String, maxBytes: Long = DEFAULT_MAX_TEXT_BYTES): String {
         requireAllowed(url)
         return execute(url) { response ->
-            val body = response.body ?: throw UpdateException(UpdateFailure.NETWORK, "Respuesta vacía")
+            val body = response.body
             val declared = body.contentLength()
             if (declared > maxBytes) throw UpdateException(UpdateFailure.INVALID_MANIFEST, "Archivo demasiado grande")
             val source = body.source()
@@ -54,7 +54,7 @@ class GithubClient @Inject constructor() {
     suspend fun downloadTo(url: String, target: File, onProgress: (Float) -> Unit) {
         requireAllowed(url)
         execute(url) { response ->
-            val body = response.body ?: throw UpdateException(UpdateFailure.NETWORK, "Respuesta vacía")
+            val body = response.body
             val total = body.contentLength()
             var written = 0L
             try {

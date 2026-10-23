@@ -12,6 +12,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Solo para NewPipe Extractor (vía rápida de YouTube); el resto de dependencias no se busca aquí.
+        maven("https://jitpack.io") {
+            content {
+                includeGroup("com.github.teamnewpipe")
+                includeGroup("com.github.TeamNewPipe")
+            }
+        }
     }
 }
 

@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.libredescarga.core.designsystem.theme.LibreTheme
 import com.libredescarga.core.designsystem.theme.isDarkTheme
 import com.libredescarga.core.domain.usecase.ImageDownloads
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.security.UrlValidator
 import com.libredescarga.feature.analysis.MediaAnalysisSheet
 import dagger.hilt.android.AndroidEntryPoint
@@ -87,6 +88,7 @@ class ShareDownloadActivity : ComponentActivity() {
             finish()
             return false
         }
+        AnalisisPerf.mark("entrada: enlace recibido por Compartir (ventana flotante)", AnalisisPerf.hostOf(valid.url))
         link = valid.url
         return true
     }

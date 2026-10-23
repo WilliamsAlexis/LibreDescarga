@@ -2,6 +2,7 @@ package com.libredescarga.core.engine
 
 import android.content.Context
 import android.os.Build
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.SearchProvider
 import com.yausername.ffmpeg.FFmpeg
@@ -33,6 +34,7 @@ enum class EngineUpdateResult { UPDATED, ALREADY_UP_TO_DATE }
 @Singleton
 class YtDlpEngine @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    private val worker: YtDlpWorker,
 ) {
     private val initMutex = Mutex()
 
@@ -49,8 +51,8 @@ class YtDlpEngine @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     resetEngineFilesIfNewVersion()
-                    YoutubeDL.init(context)
-                    FFmpeg.init(context)
+                    AnalisisPerf.measure("yt-dlp: init Python/yt-dlp (extraer y cargar)") { YoutubeDL.init(context) }
+                    AnalisisPerf.measure("yt-dlp: init FFmpeg") { FFmpeg.init(context) }
                     markEngineFilesValid()
                 } catch (error: YoutubeDLException) {
                     throw MediaError.Unknown(error.message)
@@ -87,11 +89,40 @@ class YtDlpEngine @Inject constructor(
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.longVersionCode else info.versionCode.toLong()
     }
 
-    /** Analiza un enlace sin descargar nada. Las listas se devuelven planas (rápido). */
+    /** Deja listo el proceso persistente de yt-dlp (se llama al abrir la app) para que el primer análisis no lo espere. */
+    suspend fun warmUp() {
+        initialize()
+        worker.warmUp()
+    }
+
+    /**
+     * Analiza un enlace sin descargar nada. Las listas se devuelven planas (rápido). En YouTube se omiten los formatos HLS
+     * (m3u8): la descarga usa los HTTP, y saltárselos ahorra ~1 s (solo afecta a YouTube; los demás sitios lo ignoran).
+     */
     suspend fun fetchInfo(url: String): JsonObject = runJson(
         target = url,
-        options = listOf("--dump-single-json", "--flat-playlist", "--no-playlist", "--no-warnings"),
+        options = listOf(
+            "--dump-single-json", "--flat-playlist", "--no-playlist", "--no-warnings",
+            "--extractor-args", "youtube:skip=hls",
+        ),
     )
+
+    /**
+     * Análisis rápido de YouTube con el cliente android_vr: no necesita resolver el JavaScript del reproductor, así que
+     * tarda unos 5 s en vez de 15 s, pero solo ofrece audio y hasta 360p. Se usa para mostrar algo enseguida mientras
+     * llega el análisis completo. No reintenta con actualización: si falla, el análisis completo sigue su camino.
+     */
+    suspend fun fetchInfoFast(url: String): JsonObject {
+        initialize()
+        return runJsonOnce(
+            target = url,
+            options = listOf(
+                "--dump-single-json", "--flat-playlist", "--no-playlist", "--no-warnings",
+                "--extractor-args", "youtube:player_client=android_vr",
+            ),
+            phase = "yt-dlp: proceso rápido android_vr (arranque + red + extracción)",
+        )
+    }
 
     suspend fun search(provider: SearchProvider, query: String, limit: Int): JsonObject = runJson(
         target = "${provider.searchPrefix}$limit:$query",
@@ -136,7 +167,11 @@ class YtDlpEngine @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 when (YoutubeDL.updateYoutubeDL(context, YoutubeDL.UpdateChannel.STABLE)) {
-                    YoutubeDL.UpdateStatus.DONE -> EngineUpdateResult.UPDATED
+                    YoutubeDL.UpdateStatus.DONE -> {
+                        // El proceso persistente tiene cargado el yt-dlp anterior: el próximo análisis abrirá uno nuevo.
+                        worker.stop()
+                        EngineUpdateResult.UPDATED
+                    }
                     else -> EngineUpdateResult.ALREADY_UP_TO_DATE
                 }
             } catch (error: YoutubeDLException) {
@@ -185,7 +220,8 @@ class YtDlpEngine @Inject constructor(
      * se actualiza el motor y se reintenta una vez. Como máximo una actualización forzada cada 6 horas.
      */
     private suspend fun runJson(target: String, options: List<String>): JsonObject {
-        initialize()
+        // Si el motor aún se está preparando, el análisis espera aquí.
+        AnalisisPerf.measure("yt-dlp: espera de inicialización") { initialize() }
         return try {
             runJsonOnce(target, options)
         } catch (error: MediaError) {
@@ -203,7 +239,9 @@ class YtDlpEngine @Inject constructor(
         if (now - prefs.getLong(KEY_LAST_FORCED_UPDATE, 0L) < FORCED_UPDATE_INTERVAL_MS) return false
         prefs.edit().putLong(KEY_LAST_FORCED_UPDATE, now).apply()
         return try {
-            update() == EngineUpdateResult.UPDATED
+            AnalisisPerf.measure("yt-dlp: actualización forzada antes de reintentar") {
+                update() == EngineUpdateResult.UPDATED
+            }
         } catch (error: CancellationException) {
             throw error
         } catch (_: Exception) {
@@ -211,15 +249,33 @@ class YtDlpEngine @Inject constructor(
         }
     }
 
-    private suspend fun runJsonOnce(target: String, options: List<String>): JsonObject {
-        val request = YoutubeDLRequest(target).addCommands(options)
-        val response = execute(UUID.randomUUID().toString(), request, callback = null)
-        val line = response.out.lineSequence().map { it.trim() }.lastOrNull { it.startsWith("{") }
-            ?: throw EngineErrorMapper.map(response.err)
-        return try {
-            json.parseToJsonElement(line).jsonObject
-        } catch (error: IllegalArgumentException) {
-            throw MediaError.Unknown(error.message)
+    private suspend fun runJsonOnce(
+        target: String,
+        options: List<String>,
+        phase: String = "yt-dlp: proceso completo (arranque + red + extracción)",
+    ): JsonObject {
+        val host = AnalisisPerf.hostOf(target)
+        // Primero el proceso persistente (sin arrancar Python ni importar yt-dlp); si está ocupado o falla, el clásico.
+        val persistent = AnalisisPerf.measure("$phase [persistente]", host) { worker.tryExecute(options + target) }
+        val (out, err) = if (persistent != null) {
+            if (persistent.code != 0) throw EngineErrorMapper.map(persistent.err)
+            persistent.out to persistent.err
+        } else {
+            val request = YoutubeDLRequest(target).addCommands(options)
+            // Incluye arrancar el proceso de Python, cargar yt-dlp y todas las peticiones de red del extractor.
+            val response = AnalisisPerf.measure(phase, host) {
+                execute(UUID.randomUUID().toString(), request, callback = null)
+            }
+            response.out to response.err
+        }
+        val line = out.lineSequence().map { it.trim() }.lastOrNull { it.startsWith("{") }
+            ?: throw EngineErrorMapper.map(err)
+        return AnalisisPerf.measure("yt-dlp: leer JSON de respuesta", "$host, ${line.length} caracteres") {
+            try {
+                json.parseToJsonElement(line).jsonObject
+            } catch (error: IllegalArgumentException) {
+                throw MediaError.Unknown(error.message)
+            }
         }
     }
 
