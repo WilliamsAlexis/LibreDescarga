@@ -130,6 +130,24 @@ class YtDlpEngine @Inject constructor(
     )
 
     /**
+     * Descarga a partir de un análisis ya hecho ([infoJson], con las direcciones directas de cada formato) mediante
+     * --load-info-json: yt-dlp no vuelve a extraer el video y empieza a bajar enseguida (en YouTube se ahorra ~15 s).
+     * Si falla, quien llama reintenta con [download], que extrae de nuevo.
+     */
+    suspend fun downloadFromInfo(
+        processId: String,
+        infoJson: File,
+        options: List<String>,
+        onProgress: (EngineProgress) -> Unit,
+    ) {
+        initialize()
+        val request = YoutubeDLRequest(emptyList<String>())
+            .addOption("--load-info-json", infoJson.absolutePath)
+            .addCommands(options)
+        runDownload(processId, request, onProgress)
+    }
+
+    /**
      * Descarga con los [options] indicados. Se puede cancelar cancelando la corrutina
      * o con [cancel] usando el mismo [processId].
      */

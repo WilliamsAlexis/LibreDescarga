@@ -8,6 +8,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.libredescarga.core.database.dao.DownloadDao
 import com.libredescarga.core.database.mapper.toRequest
+import com.libredescarga.core.domain.repository.AnalysisInfoSource
 import com.libredescarga.core.domain.repository.UserPreferencesRepository
 import com.libredescarga.core.domain.vault.VaultAuthRepository
 import com.libredescarga.core.domain.vault.VaultRepository
@@ -15,6 +16,7 @@ import com.libredescarga.core.engine.DownloadCommandBuilder
 import com.libredescarga.core.engine.DownloadTuning
 import com.libredescarga.core.engine.EngineProgress
 import com.libredescarga.core.engine.YtDlpEngine
+import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.model.DownloadErrorCodes
 import com.libredescarga.core.model.DownloadRequest
 import com.libredescarga.core.model.DownloadStatus
@@ -23,6 +25,7 @@ import com.libredescarga.core.model.MediaKind
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
@@ -52,6 +55,7 @@ class DownloadWorker @AssistedInject constructor(
     private val preferences: UserPreferencesRepository,
     private val vault: VaultRepository,
     private val vaultAuth: VaultAuthRepository,
+    private val analysisInfo: AnalysisInfoSource,
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
@@ -89,7 +93,7 @@ class DownloadWorker @AssistedInject constructor(
                 } else {
                     request
                 }
-                runDownload(downloadId, source, DownloadCommandBuilder.build(source, workDir.absolutePath, tuning))
+                runDownload(downloadId, source, DownloadCommandBuilder.build(source, workDir.absolutePath, tuning), workDir)
                 storage.deleteLocalSource(workDir)
             }
             // Las imágenes siempre van a la galería: la bóveda solo guarda videos y audios.
@@ -175,7 +179,7 @@ class DownloadWorker @AssistedInject constructor(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun runDownload(downloadId: String, request: DownloadRequest, args: List<String>) {
+    private suspend fun runDownload(downloadId: String, request: DownloadRequest, args: List<String>, workDir: File) {
         val progress = MutableStateFlow<EngineProgress?>(null)
         coroutineScope {
             // El motor informa muchas veces por segundo: se guarda y notifica cada 500 ms.
@@ -194,12 +198,64 @@ class DownloadWorker @AssistedInject constructor(
                     )
                 }
             }
+            // Diagnóstico (AnalisisPerf): cuánto tarda en empezar a llegar el archivo y cuánto dura toda la descarga.
+            val host = AnalisisPerf.hostOf(request.url)
+            val startedAt = System.nanoTime()
+            var firstBytesLogged = false
+            val onUpdate: (EngineProgress) -> Unit = { update ->
+                if (!firstBytesLogged && ((update.downloadedBytes ?: 0) > 0 || update.percent > 0f)) {
+                    firstBytesLogged = true
+                    AnalisisPerf.duration("descarga: espera hasta el primer avance", (System.nanoTime() - startedAt) / 1_000_000, host)
+                }
+                progress.value = update
+            }
             try {
-                engine.download(downloadId, request.url, args) { progress.value = it }
+                val savedInfo = reusableAnalysis(request, workDir)
+                if (savedInfo != null && downloadFromAnalysis(downloadId, savedInfo, args, onUpdate, host)) {
+                    AnalisisPerf.duration("descarga: TOTAL (reutilizando el análisis)", (System.nanoTime() - startedAt) / 1_000_000, host)
+                } else {
+                    engine.download(downloadId, request.url, args, onUpdate)
+                    AnalisisPerf.duration("descarga: TOTAL (yt-dlp extrae de nuevo)", (System.nanoTime() - startedAt) / 1_000_000, host)
+                }
             } finally {
                 reporter.cancel()
             }
         }
+    }
+
+    /**
+     * El análisis que el usuario acaba de ver (guardado en disco, con las direcciones directas de cada formato), si sirve
+     * para esta descarga: reciente y sin subtítulos (esos se piden aparte al extraer). Se copia a la carpeta de trabajo.
+     */
+    private suspend fun reusableAnalysis(request: DownloadRequest, workDir: File): File? {
+        if (request.subtitle != null || request.url.startsWith("file:")) return null
+        val json = try {
+            analysisInfo.infoJsonFor(request.url, MAX_ANALYSIS_AGE_MS)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            null
+        } ?: return null
+        return withContext(Dispatchers.IO) { File(workDir, ANALYSIS_FILE).apply { writeText(json) } }
+    }
+
+    /** Descarga sin volver a extraer el video. Devuelve false si no funcionó (por ejemplo, direcciones caducadas). */
+    private suspend fun downloadFromAnalysis(
+        downloadId: String,
+        info: File,
+        args: List<String>,
+        onUpdate: (EngineProgress) -> Unit,
+        host: String,
+    ): Boolean = try {
+        engine.downloadFromInfo(downloadId, info, args, onUpdate)
+        true
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: Exception) {
+        // Lo ya bajado (.part) se aprovecha: el siguiente intento continúa donde quedó.
+        android.util.Log.w("DownloadWorker", "No sirvió el análisis guardado; yt-dlp extrae de nuevo", error)
+        AnalisisPerf.mark("descarga: el análisis guardado no sirvió; se extrae de nuevo", host)
+        false
     }
 
     /**
@@ -262,6 +318,9 @@ class DownloadWorker @AssistedInject constructor(
         private const val PROGRESS_INTERVAL_MS = 500L
         private const val MAX_NETWORK_RETRIES = 3
         private const val MIN_FREE_BYTES = 100L * 1024 * 1024
+        // Las direcciones de YouTube caducan a las ~6 h: un análisis de más de 1 h no se reutiliza.
+        private const val MAX_ANALYSIS_AGE_MS = 60L * 60 * 1000
+        private const val ANALYSIS_FILE = "analysis.info.json"
         private val RUNNABLE_STATUSES = setOf(
             DownloadStatus.QUEUED.name,
             DownloadStatus.WAITING.name,

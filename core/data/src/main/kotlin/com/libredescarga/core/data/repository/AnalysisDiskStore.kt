@@ -25,16 +25,24 @@ internal class AnalysisDiskStore(
 ) {
     class Saved(val url: String, val json: JsonObject)
 
-    fun read(key: String): Saved? {
+    /** [maxAgeMs]: antigüedad máxima aceptada (por defecto, la de la caché). */
+    fun read(key: String, maxAgeMs: Long = ttlMs): Saved? {
         val file = fileFor(key)
         if (!file.isFile) return null
         return try {
             val root = Json.parseToJsonElement(file.readText()).jsonObject
+            // Formato anterior (sin las direcciones directas de cada formato): no sirve para descargar, se descarta.
+            if (root["version"]?.jsonPrimitive?.long != FORMAT_VERSION) {
+                file.delete()
+                return null
+            }
             val savedAt = root["savedAt"]?.jsonPrimitive?.long ?: return null
             if (clock() - savedAt > ttlMs) {
                 file.delete()
                 return null
             }
+            // Más viejo de lo pedido, pero aún válido para la caché: no se borra.
+            if (clock() - savedAt > maxAgeMs) return null
             Saved(
                 url = root["url"]?.jsonPrimitive?.content ?: return null,
                 json = root["data"]?.jsonObject ?: return null,
@@ -49,6 +57,7 @@ internal class AnalysisDiskStore(
         try {
             dir.mkdirs()
             val content = buildJsonObject {
+                put("version", FORMAT_VERSION)
                 put("savedAt", clock())
                 put("url", url)
                 put("data", json)
@@ -77,3 +86,6 @@ internal class AnalysisDiskStore(
         return File(dir, "$digest.json")
     }
 }
+
+/** Sube cuando cambia lo que se guarda (2: incluye las direcciones directas para descargar sin volver a extraer). */
+private const val FORMAT_VERSION = 2L

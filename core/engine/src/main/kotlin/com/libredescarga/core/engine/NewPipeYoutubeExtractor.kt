@@ -66,7 +66,8 @@ class NewPipeYoutubeExtractor @Inject constructor() {
         if (info.viewCount >= 0) put("view_count", info.viewCount)
         info.thumbnails.maxByOrNull { it.width }?.url?.let { put("thumbnail", it) }
         put("webpage_url", info.url)
-        put("extractor_key", "YoutubeNewPipe")
+        put("extractor", "youtube")
+        put("extractor_key", "Youtube")
         if (info.streamType == StreamType.LIVE_STREAM || info.streamType == StreamType.AUDIO_LIVE_STREAM) {
             put("is_live", true)
         }
@@ -96,6 +97,7 @@ class NewPipeYoutubeExtractor @Inject constructor() {
 
     private fun kotlinx.serialization.json.JsonObjectBuilder.videoFormat(video: VideoStream) {
         val ext = if (video.format == MediaFormat.WEBM) "webm" else "mp4"
+        directDownload(video.content)
         put("format_id", video.itag.toString())
         put("ext", ext)
         put("vcodec", video.codec ?: if (ext == "webm") "vp9" else "avc1")
@@ -111,6 +113,7 @@ class NewPipeYoutubeExtractor @Inject constructor() {
     private fun kotlinx.serialization.json.JsonObjectBuilder.audioFormat(audio: AudioStream) {
         val m4a = audio.format == MediaFormat.M4A
         val kbps = audio.averageBitrate.takeIf { it > 0 } ?: (audio.bitrate / 1000).takeIf { it > 0 }
+        directDownload(audio.content)
         put("format_id", audio.itag.toString())
         put("ext", if (m4a) "m4a" else "webm")
         put("vcodec", "none")
@@ -122,6 +125,18 @@ class NewPipeYoutubeExtractor @Inject constructor() {
         audio.itagItem?.contentLength?.takeIf { it > 0 }?.let { put("filesize", it) }
     }
 
+    /**
+     * Dirección directa del formato (ya descifrada por NewPipe) para que la descarga no tenga que volver a extraer el video:
+     * yt-dlp la usa con --load-info-json. Se pide por trozos de 10 MB, igual que hace yt-dlp con YouTube (si no, YouTube
+     * frena la descarga).
+     */
+    private fun kotlinx.serialization.json.JsonObjectBuilder.directDownload(url: String) {
+        put("url", url)
+        put("protocol", "https")
+        putJsonObject("http_headers") { put("User-Agent", USER_AGENT) }
+        putJsonObject("downloader_options") { put("http_chunk_size", HTTP_CHUNK_SIZE) }
+    }
+
     /** Solo formatos que yt-dlp puede pedir por su itag (descarga HTTP directa) y en contenedores que la app maneja. */
     private fun VideoStream.isUsable(): Boolean =
         deliveryMethod == DeliveryMethod.PROGRESSIVE_HTTP && itag > 0 && height > 0 &&
@@ -129,6 +144,12 @@ class NewPipeYoutubeExtractor @Inject constructor() {
 
     private fun AudioStream.isUsable(): Boolean =
         deliveryMethod == DeliveryMethod.PROGRESSIVE_HTTP && itag > 0
+
+    private companion object {
+        /** Mismo navegador con el que NewPipe obtuvo las direcciones (YouTube puede rechazar otro distinto). */
+        const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+        const val HTTP_CHUNK_SIZE = 10_485_760L
+    }
 
     /** Cliente HTTP que usa NewPipe para hablar con YouTube. */
     private class OkHttpDownloader : Downloader() {
@@ -163,7 +184,6 @@ class NewPipeYoutubeExtractor @Inject constructor() {
         }
 
         private companion object {
-            const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
             const val HTTP_TOO_MANY_REQUESTS = 429
         }
     }

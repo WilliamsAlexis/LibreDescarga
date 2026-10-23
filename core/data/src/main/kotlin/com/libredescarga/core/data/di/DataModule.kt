@@ -31,6 +31,7 @@ import com.libredescarga.core.data.repository.OfflineSiteRepository
 import com.libredescarga.core.data.repository.OfflineUserPreferencesRepository
 import com.libredescarga.core.data.repository.WorkDownloadRepository
 import com.libredescarga.core.data.repository.YtDlpMediaExtractorRepository
+import com.libredescarga.core.domain.repository.AnalysisInfoSource
 import com.libredescarga.core.domain.repository.BlocklistRepository
 import com.libredescarga.core.domain.repository.DownloadRepository
 import com.libredescarga.core.domain.repository.IncomingLinkRepository
@@ -65,6 +66,12 @@ internal abstract class DataModule {
     abstract fun bindMediaExtractorRepository(
         impl: YtDlpMediaExtractorRepository,
     ): MediaExtractorRepository
+
+    // El mismo análisis, reutilizado por la descarga para no volver a extraer el video.
+    @Binds
+    abstract fun bindAnalysisInfoSource(
+        impl: YtDlpMediaExtractorRepository,
+    ): AnalysisInfoSource
 
     // Historial de búsquedas.
     @Binds

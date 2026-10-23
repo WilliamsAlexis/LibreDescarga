@@ -1,6 +1,7 @@
 package com.libredescarga.core.data.repository
 
 import android.content.Context
+import com.libredescarga.core.domain.repository.AnalysisInfoSource
 import com.libredescarga.core.domain.repository.MediaExtractorRepository
 import com.libredescarga.core.domain.usecase.AnalysisCacheKey
 import com.libredescarga.core.engine.InfoParser
@@ -32,7 +33,7 @@ internal class YtDlpMediaExtractorRepository @Inject constructor(
     @param:ApplicationContext context: Context,
     private val engine: YtDlpEngine,
     private val youtubeNative: NewPipeYoutubeExtractor,
-) : MediaExtractorRepository {
+) : MediaExtractorRepository, AnalysisInfoSource {
 
     /** Resultado de un análisis junto con el JSON del que salió (lo que se guarda en disco). */
     private class Analyzed(val json: JsonObject, val result: AnalysisResult)
@@ -93,6 +94,14 @@ internal class YtDlpMediaExtractorRepository @Inject constructor(
             if (!partialSent.get()) throw error
             AnalisisPerf.mark("análisis completo falló; se conserva el parcial", host)
         }
+    }
+
+    override suspend fun infoJsonFor(url: String, maxAgeMs: Long): String? = withContext(Dispatchers.IO) {
+        // Sin subtítulos: los de la vía nativa solo traen el nombre (sin dirección) y yt-dlp los rechazaría; además, una
+        // descarga con subtítulos no reutiliza el análisis (los pide al extraer).
+        disk.read(AnalysisCacheKey.of(url), maxAgeMs)?.json
+            ?.let { JsonObject(it - "subtitles" - "automatic_captions") }
+            ?.toString()
     }
 
     override suspend fun search(query: String, provider: SearchProvider, limit: Int): List<MediaEntry> = guard {

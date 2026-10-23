@@ -49,4 +49,24 @@ class AnalysisDiskStoreTest {
     fun `una clave sin guardar no existe`() {
         assertNull(store().read("nada"))
     }
+
+    @Test
+    fun `para descargar se puede pedir un analisis mas reciente sin borrar el guardado`() {
+        val s = store(ttl = 6 * 60 * 60_000L)
+        s.write("k", "https://a/b", json)
+        now += 2 * 60 * 60_000L // 2 horas después
+
+        assertNull(s.read("k", maxAgeMs = 60 * 60_000L)) // para descargar (máx. 1 h) ya no sirve
+        assertEquals(json, s.read("k")!!.json) // pero sigue sirviendo para mostrar el análisis
+    }
+
+    @Test
+    fun `un analisis guardado con el formato anterior se descarta`() {
+        val s = store()
+        s.write("k", "https://a/b", json)
+        val file = folder.root.listFiles { f -> f.extension == "json" }!!.single()
+        file.writeText(file.readText().replace("\"version\":2,", ""))
+
+        assertNull(s.read("k"))
+    }
 }
