@@ -62,7 +62,7 @@
     <!-- Apoyo -->
     <string name="settings_section_support">Apoyo al creador</string>
     <string name="settings_support">Apoyar al creador ❤</string>
-    <string name="settings_support_description">Donación voluntaria por PayPal. No desbloquea nada.</string>
+    <string name="settings_support_description">Donación voluntaria por PayPal, Yape o Plin. No desbloquea nada.</string>
     <string name="settings_hide_reminders">Ocultar recordatorios de donación</string>
     <string name="settings_hide_reminders_description">No volverás a ver el mensaje de apoyo.</string>
     <string name="settings_about">Acerca de</string>
@@ -79,6 +79,12 @@
     <string name="settings_support_donate">Donar con PayPal</string>
     <string name="settings_support_copy">Copiar enlace de PayPal</string>
     <string name="settings_support_share">Compartir enlace</string>
+    <string name="settings_support_qr_title">O apoya con Yape o Plin</string>
+    <string name="settings_support_yape">Yape</string>
+    <string name="settings_support_yape_desc">Código QR de Yape</string>
+    <string name="settings_support_plin">Plin · Williams Alexis Lopez Coronado</string>
+    <string name="settings_support_plin_desc">Código QR de Plin</string>
+    <string name="settings_support_qr_hint">Escanea el código con la app de Yape o Plin (pagos en soles, Perú).</string>
     <string name="settings_support_copied">Enlace copiado</string>
     <string name="settings_support_no_browser">No hay ningún navegador para abrir el enlace.</string>
     <string name="settings_support_privacy">La app no procesa pagos, no pide datos de tarjeta y no guarda si donaste. La app es idéntica para quien dona y para quien no.</string>

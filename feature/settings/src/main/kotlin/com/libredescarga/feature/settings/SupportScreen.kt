@@ -1,6 +1,15 @@
 package com.libredescarga.feature.settings
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -28,6 +37,19 @@ import com.libredescarga.core.designsystem.icon.LibreIcons
 import com.libredescarga.feature.settings.component.SettingsScaffold
 import kotlinx.coroutines.launch
 
+/** Código QR de un monedero peruano sobre fondo blanco (necesario para que lo lea cualquier cámara, también en tema oscuro). */
+@Composable
+private fun DonationQr(@DrawableRes image: Int, name: String, description: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(name, style = MaterialTheme.typography.titleSmall)
+        Image(
+            painter = painterResource(image),
+            contentDescription = description,
+            modifier = Modifier.size(240.dp).clip(RoundedCornerShape(16.dp)).background(Color.White).padding(12.dp),
+        )
+    }
+}
+
 /**
  * "Apoyar al creador": una donación voluntaria por PayPal que no desbloquea nada.
  * La app es idéntica para quien dona y para quien no.
@@ -54,7 +76,7 @@ internal fun SupportScreen(onBack: () -> Unit) {
         snackbarHostState = snackbarHostState,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -84,6 +106,20 @@ internal fun SupportScreen(onBack: () -> Unit) {
                 Icon(LibreIcons.Share, contentDescription = null)
                 Text(shareTitle, modifier = Modifier.padding(start = 8.dp))
             }
+            Text(
+                text = stringResource(R.string.settings_support_qr_title),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            DonationQr(R.drawable.donate_yape, stringResource(R.string.settings_support_yape), stringResource(R.string.settings_support_yape_desc))
+            DonationQr(R.drawable.donate_plin, stringResource(R.string.settings_support_plin), stringResource(R.string.settings_support_plin_desc))
+            Text(
+                text = stringResource(R.string.settings_support_qr_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
             Text(
                 text = stringResource(R.string.settings_support_privacy),
                 style = MaterialTheme.typography.bodySmall,
