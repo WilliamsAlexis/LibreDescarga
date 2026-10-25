@@ -26,6 +26,7 @@ import com.libredescarga.feature.browser.navigation.BrowserRoute
 import com.libredescarga.feature.onboarding.navigation.OnboardingRoute
 import com.libredescarga.feature.player.music.MiniPlayer
 import com.libredescarga.feature.settings.DonationPromptDialog
+import com.libredescarga.feature.settings.navigation.UpdatesRoute
 import com.libredescarga.feature.player.navigation.NowPlayingRoute
 import com.libredescarga.feature.player.navigation.VideoPlayerRoute
 
@@ -37,6 +38,8 @@ import com.libredescarga.feature.player.navigation.VideoPlayerRoute
 fun LibreDescargaAppUi(
     showOnboarding: Boolean,
     hasPendingLink: Boolean,
+    openUpdates: Boolean,
+    onOpenUpdatesHandled: () -> Unit,
     showDonationPrompt: Boolean,
     onDonationPromptAnswered: () -> Unit,
 ) {
@@ -57,7 +60,15 @@ fun LibreDescargaAppUi(
             navController.navigateToTopLevel(TopLevelDestination.HOME)
         }
     }
-    val isVideoPlayer = currentDestination?.hasRoute(VideoPlayerRoute::class) == true
+    // Al tocar el aviso de versión nueva se abre Ajustes → Actualizaciones (tras la bienvenida).
+    LaunchedEffect(openUpdates, hideNavigation, currentDestination) {
+        if (openUpdates && !hideNavigation && currentDestination != null) {
+            navController.navigateToTopLevel(TopLevelDestination.SETTINGS)
+            navController.navigate(UpdatesRoute)
+            onOpenUpdatesHandled()
+        }
+    }
+    val isVideoPlayer =currentDestination?.hasRoute(VideoPlayerRoute::class) == true
     val isBrowser = currentDestination?.hasRoute(BrowserRoute::class) == true
     val isPlayerScreen = isVideoPlayer || isBrowser || currentDestination?.hasRoute(NowPlayingRoute::class) == true
     val layoutType = if (hideNavigation || isVideoPlayer || isBrowser) {

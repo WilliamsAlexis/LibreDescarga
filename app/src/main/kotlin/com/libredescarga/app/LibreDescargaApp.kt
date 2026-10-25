@@ -3,6 +3,7 @@ package com.libredescarga.app
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.libredescarga.app.update.AppUpdateReminder
 import com.libredescarga.core.downloader.DownloadQueueManager
 import com.libredescarga.core.engine.YtDlpEngine
 import dagger.hilt.android.HiltAndroidApp
@@ -26,6 +27,9 @@ class LibreDescargaApp : Application(), Configuration.Provider {
 
     @Inject
     lateinit var downloadQueue: DownloadQueueManager
+
+    @Inject
+    lateinit var updateReminder: AppUpdateReminder
 
     // Una excepción suelta en segundo plano (cola de descargas, motor...) no debe cerrar la app.
     private val appScope = CoroutineScope(
@@ -51,6 +55,8 @@ class LibreDescargaApp : Application(), Configuration.Provider {
             // Mantiene el motor al día (como máximo una vez por semana) para evitar errores como el 403 de YouTube.
             runCatching { engine.updateIfStale() }
         }
+        // Deja programada la revisión periódica de versiones nuevas en GitHub (si el usuario no la desactivó).
+        updateReminder.apply()
         // Retoma la cola de descargas (tras cerrar la app o reiniciar el teléfono).
         downloadQueue.start(appScope)
     }

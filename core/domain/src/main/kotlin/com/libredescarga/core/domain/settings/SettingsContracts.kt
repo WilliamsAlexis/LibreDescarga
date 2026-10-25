@@ -7,6 +7,7 @@ import com.libredescarga.core.model.InstallOutcome
 import com.libredescarga.core.model.UpdateCheck
 import com.libredescarga.core.model.UserSettings
 import com.libredescarga.core.security.UpdateSecurity
+import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 
 /** Actualización de la app desde GitHub Releases. Todo se verifica antes de instalar. */
@@ -25,6 +26,13 @@ interface AppUpdateRepository {
 
     /** Pide a Android instalar el APK ya verificado. */
     fun install(apk: File): InstallOutcome
+}
+
+/** Aviso automático de versiones nuevas: revisa GitHub en segundo plano y notifica una sola vez por versión. */
+interface UpdateReminder {
+    val enabled: StateFlow<Boolean>
+
+    fun setEnabled(value: Boolean)
 }
 
 /** El motor de descarga (yt-dlp) se actualiza sin reinstalar la app. */

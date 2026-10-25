@@ -140,7 +140,7 @@ class SettingsViewModelsTest {
     private val appUpdater = FakeAppUpdateRepository()
     private val engine = FakeEngineRepository()
     private val blocklistUpdater = FakeBlocklistUpdater()
-    private fun updatesViewModel() = UpdatesViewModel(appUpdater, engine, blocklistUpdater)
+    private fun updatesViewModel() = UpdatesViewModel(appUpdater, engine, blocklistUpdater, com.libredescarga.core.testing.FakeUpdateReminder())
 
     private val newVersion = AppUpdate(
         versionCode = 2,

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.libredescarga.core.domain.settings.AppUpdateRepository
 import com.libredescarga.core.domain.settings.BlocklistUpdater
 import com.libredescarga.core.domain.settings.EngineRepository
+import com.libredescarga.core.domain.settings.UpdateReminder
 import com.libredescarga.core.model.AppUpdate
 import com.libredescarga.core.model.BlocklistRefresh
 import com.libredescarga.core.model.EngineUpdateOutcome
@@ -67,7 +68,13 @@ class UpdatesViewModel @Inject constructor(
     private val appUpdater: AppUpdateRepository,
     private val engineRepository: EngineRepository,
     private val blocklistUpdater: BlocklistUpdater,
+    private val reminder: UpdateReminder,
 ) : ViewModel() {
+
+    /** Si la app avisa sola cuando hay una versión nueva en GitHub. */
+    val autoCheck: StateFlow<Boolean> = reminder.enabled
+
+    fun onAutoCheckChanged(enabled: Boolean) = reminder.setEnabled(enabled)
 
     private val _uiState = MutableStateFlow(
         UpdatesUiState(

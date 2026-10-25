@@ -12,8 +12,11 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,18 @@ internal fun UpdatesScreen(onBack: () -> Unit, viewModel: UpdatesViewModel = hil
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             AppCard(state, onCheck = viewModel::onCheckApp, onDownload = viewModel::onDownloadUpdate, onInstall = viewModel::onInstallUpdate)
+            val autoCheck by viewModel.autoCheck.collectAsStateWithLifecycle()
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.settings_updates_auto), style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        stringResource(R.string.settings_updates_auto_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = autoCheck, onCheckedChange = viewModel::onAutoCheckChanged)
+            }
             EngineCard(state, onUpdate = viewModel::onUpdateEngine)
             BlocklistCard(state, onUpdate = viewModel::onUpdateBlocklist)
         }

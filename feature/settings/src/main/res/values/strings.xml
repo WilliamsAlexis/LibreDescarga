@@ -139,6 +139,8 @@
     <string name="settings_updates_verifying_note">Después se comprueba su huella SHA-256 y que esté firmada igual que esta app.</string>
     <string name="settings_updates_verified">Descargada y verificada (SHA-256 y firma correctos).</string>
     <string name="settings_updates_permission">Android necesita tu permiso para instalar desde esta app. Actívalo en la pantalla que se abrió, vuelve y pulsa «Instalar».</string>
+    <string name="settings_updates_auto">Avisarme de nuevas versiones</string>
+    <string name="settings_updates_auto_description">Revisa GitHub cada cierto tiempo y te notifica cuando hay una versión nueva para descargar e instalar aquí mismo.</string>
     <string name="settings_updates_check">Buscar actualización</string>
     <string name="settings_updates_download">Descargar y verificar</string>
     <string name="settings_updates_install">Instalar</string>

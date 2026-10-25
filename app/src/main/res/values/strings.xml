@@ -4,6 +4,10 @@
     <string name="app_name" translatable="false">LibreDescarga</string>
 
     <!-- Navegación principal -->
+    <string name="update_channel_name">Actualizaciones de la app</string>
+    <string name="update_channel_description">Avisa cuando hay una versión nueva de LibreDescarga en GitHub.</string>
+    <string name="update_notification_title">Nueva versión disponible: %1$s</string>
+    <string name="update_notification_text">Toca para descargarla e instalarla desde la app.</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_downloads">Descargas</string>
     <string name="nav_library">Biblioteca</string>

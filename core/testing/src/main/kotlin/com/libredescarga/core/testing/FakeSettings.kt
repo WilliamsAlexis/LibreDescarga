@@ -11,7 +11,19 @@ import com.libredescarga.core.model.BlocklistRefresh
 import com.libredescarga.core.model.EngineUpdateOutcome
 import com.libredescarga.core.model.InstallOutcome
 import com.libredescarga.core.model.UpdateCheck
+import com.libredescarga.core.domain.settings.UpdateReminder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.io.File
+
+/** Aviso de actualizaciones de mentira, solo para las pruebas. */
+class FakeUpdateReminder : UpdateReminder {
+    private val state = MutableStateFlow(true)
+    override val enabled: StateFlow<Boolean> = state
+    override fun setEnabled(value: Boolean) {
+        state.value = value
+    }
+}
 
 /** Versión de mentira del actualizador de la app, solo para las pruebas automáticas (no se usa en la app real). */
 class FakeAppUpdateRepository : AppUpdateRepository {

@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.libredescarga.app.ui.LibreDescargaAppUi
+import com.libredescarga.app.update.EXTRA_OPEN_UPDATES
 import com.libredescarga.core.config.AppConfig
 import com.libredescarga.core.designsystem.theme.LibreTheme
 import com.libredescarga.core.domain.settings.DonationPrompt
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
             if (state is MainActivityUiState.Success) {
                 val darkTheme = isDarkTheme(state.settings.themeMode)
                 val pendingLink by viewModel.pendingLink.collectAsStateWithLifecycle()
+                val openUpdates by viewModel.openUpdates.collectAsStateWithLifecycle()
 
                 // Con la bienvenida terminada se pide el permiso de notificaciones (opcional) para mostrar el avance.
                 LaunchedEffect(state.showOnboarding) {
@@ -91,6 +93,8 @@ class MainActivity : AppCompatActivity() {
                         LibreDescargaAppUi(
                             showOnboarding = state.showOnboarding,
                             hasPendingLink = pendingLink != null,
+                            openUpdates = openUpdates,
+                            onOpenUpdatesHandled = viewModel::onOpenUpdatesHandled,
                             showDonationPrompt = DonationPrompt.shouldShow(state.settings, AppConfig.DONATION_PROMPT_THRESHOLD),
                             onDonationPromptAnswered = viewModel::onDonationPromptAnswered,
                         )
@@ -108,6 +112,10 @@ class MainActivity : AppCompatActivity() {
 
     /** "Compartir con LibreDescarga" desde otras apps (ACTION_SEND con texto). */
     private fun handleIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_OPEN_UPDATES, false) == true) {
+            intent.removeExtra(EXTRA_OPEN_UPDATES)
+            viewModel.onOpenUpdatesRequested()
+        }
         if (intent?.action == Intent.ACTION_SEND && intent.type?.startsWith("text/") == true) {
             viewModel.onSharedText(intent.getStringExtra(Intent.EXTRA_TEXT))
         }

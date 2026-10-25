@@ -10,7 +10,9 @@ import com.libredescarga.core.model.AnalisisPerf
 import com.libredescarga.core.security.UrlValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,6 +50,19 @@ class MainActivityViewModel @Inject constructor(
     /** El usuario respondió el mensaje de apoyo (donó o dijo "No, gracias"): no vuelve a aparecer nunca. */
     fun onDonationPromptAnswered() {
         viewModelScope.launch { repository.setDonationPromptAnswered() }
+    }
+
+    private val _openUpdates = MutableStateFlow(false)
+
+    /** El usuario tocó el aviso de "nueva versión": la app debe abrir la pantalla Actualizaciones. */
+    val openUpdates: StateFlow<Boolean> = _openUpdates.asStateFlow()
+
+    fun onOpenUpdatesRequested() {
+        _openUpdates.value = true
+    }
+
+    fun onOpenUpdatesHandled() {
+        _openUpdates.value = false
     }
 
     /** Enlace recibido de otra app y aún no atendido por Inicio. */
