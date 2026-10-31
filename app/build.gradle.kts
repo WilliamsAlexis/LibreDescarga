@@ -12,8 +12,8 @@ plugins {
 // (El nombre visible se cambia en src/main/res/values/strings.xml â†’ app_name.)
 // ---------------------------------------------------------------------------
 val appPackage = "com.libredescarga.app"
-val appVersionCode = 10
-val appVersionName = "1.0.9"
+val appVersionCode = 11
+val appVersionName = "1.1.0"
 
 // Datos de firma, fuera del control de versiones (ver keystore.properties.example).
 val keystoreProperties = Properties().apply {
@@ -38,6 +38,10 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
+                // Firma completa (v1 + v2 + v3): la aceptan todos los instaladores, incluido el de Samsung.
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
             }
         }
     }

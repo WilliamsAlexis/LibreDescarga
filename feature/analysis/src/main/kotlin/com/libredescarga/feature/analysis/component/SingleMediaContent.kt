@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -313,8 +314,9 @@ private fun SubtitleSection(
 @Composable
 private fun SubtitleTrack.displayName(): String {
     val code = languageCode.removeSuffix("-orig")
-    val language = name ?: Locale.forLanguageTag(code).getDisplayLanguage(Locale.getDefault())
-        .replaceFirstChar { it.titlecase(Locale.getDefault()) }
+    val locale = LocalConfiguration.current.locales[0]
+    val language = name ?: Locale.forLanguageTag(code).getDisplayLanguage(locale)
+        .replaceFirstChar { it.titlecase(locale) }
         .ifBlank { code }
     return if (isAutomatic) stringResource(R.string.analysis_subtitles_automatic, language) else language
 }
