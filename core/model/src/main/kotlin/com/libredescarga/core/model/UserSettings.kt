@@ -59,6 +59,4 @@ enum class AudioFormat(val extension: String?, val bitrateKbps: Int?) {
     MP3_128("mp3", 128),
     MP3_192("mp3", 192),
     MP3_320("mp3", 320),
-    M4A("m4a", null),
-    OPUS("opus", null),
 }

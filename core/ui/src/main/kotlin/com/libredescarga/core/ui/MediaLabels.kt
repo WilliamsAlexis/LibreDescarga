@@ -26,10 +26,8 @@ fun VideoQuality.label(): String = when (this) {
 @Composable
 fun AudioFormat.label(): String = when (this) {
     AudioFormat.ASK -> stringResource(R.string.core_ui_quality_ask)
-    AudioFormat.MP3_128, AudioFormat.MP3_192, AudioFormat.MP3_320 ->
-        stringResource(R.string.core_ui_audio_mp3, bitrateKbps!!)
-    AudioFormat.M4A -> stringResource(R.string.core_ui_audio_m4a)
-    AudioFormat.OPUS -> stringResource(R.string.core_ui_audio_opus)
+    AudioFormat.MP3_320 -> stringResource(R.string.core_ui_audio_mp3_best, bitrateKbps!!)
+    AudioFormat.MP3_128, AudioFormat.MP3_192 -> stringResource(R.string.core_ui_audio_mp3, bitrateKbps!!)
 }
 
 /** Mensaje claro para cada error de análisis o descarga. */

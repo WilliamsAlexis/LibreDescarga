@@ -44,7 +44,8 @@ data class VideoOption(
     val isPreset: Boolean = false,
 )
 
-enum class VideoContainer(val extension: String) { MP4("mp4"), WEBM("webm") }
+/** Los videos se guardan siempre en MP4 (un formato WebM de YouTube se convierte al descargar). */
+enum class VideoContainer(val extension: String) { MP4("mp4") }
 
 data class AudioOption(
     val format: AudioFormat,

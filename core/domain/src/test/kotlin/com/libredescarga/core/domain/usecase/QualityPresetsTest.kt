@@ -35,8 +35,8 @@ class QualityPresetsTest {
     }
 
     @Test
-    fun `prefiere mp4 a webm y ignora las predefinidas al buscar una altura`() {
-        val options = listOf(real("w", 720, VideoContainer.WEBM), real("m", 720, VideoContainer.MP4))
+    fun `ignora las predefinidas al buscar una altura`() {
+        val options = listOf(real("m", 720, VideoContainer.MP4))
 
         assertEquals("m", QualityPresets.sameHeight(options, 720)?.formatId)
         assertNull(QualityPresets.sameHeight(QualityPresets.forPartial(emptyList()), 720))

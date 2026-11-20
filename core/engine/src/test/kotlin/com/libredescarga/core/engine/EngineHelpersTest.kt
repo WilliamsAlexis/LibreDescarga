@@ -51,13 +51,13 @@ class EngineHelpersTest {
 
     @Test
     fun `descarga por calidad limita la altura`() {
-        val request = base.copy(video = VideoSelection(null, 720, VideoContainer.WEBM, false))
+        val request = base.copy(video = VideoSelection(null, 720, VideoContainer.MP4, false))
         val args = DownloadCommandBuilder.build(request, "/tmp")
         assertEquals(
-            "bv*[height<=720][ext=webm]+ba[ext=webm]/bv*[height<=720]+ba/b[height<=720]/b",
+            "bv*[height<=720][ext=mp4]+ba[ext=m4a]/bv*[height<=720]+ba/b[height<=720]/b",
             args.valueOf("-f"),
         )
-        assertEquals("webm", args.valueOf("--merge-output-format"))
+        assertEquals("mp4", args.valueOf("--merge-output-format"))
     }
 
     @Test
@@ -82,12 +82,12 @@ class EngineHelpersTest {
     }
 
     @Test
-    fun `audio OPUS usa la mejor calidad y no incrusta carátula`() {
-        val request = base.copy(kind = MediaKind.AUDIO, video = null, audioFormat = AudioFormat.OPUS)
+    fun `audio MP3 320 incrusta carátula y usa su bitrate`() {
+        val request = base.copy(kind = MediaKind.AUDIO, video = null, audioFormat = AudioFormat.MP3_320)
         val args = DownloadCommandBuilder.build(request, "/tmp")
-        assertEquals("opus", args.valueOf("--audio-format"))
-        assertEquals("0", args.valueOf("--audio-quality"))
-        assertFalse("--embed-thumbnail" in args)
+        assertEquals("mp3", args.valueOf("--audio-format"))
+        assertEquals("320K", args.valueOf("--audio-quality"))
+        assertTrue("--embed-thumbnail" in args)
     }
 
     @Test

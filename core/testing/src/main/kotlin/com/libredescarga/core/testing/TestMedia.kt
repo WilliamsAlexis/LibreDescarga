@@ -55,8 +55,6 @@ object TestMedia {
             AudioOption(AudioFormat.MP3_320, 9_800_000),
             AudioOption(AudioFormat.MP3_192, 5_900_000),
             AudioOption(AudioFormat.MP3_128, 3_900_000),
-            AudioOption(AudioFormat.M4A, 4_000_000),
-            AudioOption(AudioFormat.OPUS, 3_500_000),
         ),
         subtitles = listOf(SubtitleTrack("es", "Español", isAutomatic = false)),
     )

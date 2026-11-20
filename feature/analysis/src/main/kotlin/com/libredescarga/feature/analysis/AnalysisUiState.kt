@@ -105,4 +105,4 @@ internal val PlaylistVideoQualities = listOf(
     VideoQuality.BEST,
 )
 
-internal val PlaylistAudioFormats = AudioFormat.entries.filter { it != AudioFormat.ASK }
+internal val PlaylistAudioFormats = AudioFormat.entries.filter { it != AudioFormat.ASK }.sortedByDescending { it.bitrateKbps }

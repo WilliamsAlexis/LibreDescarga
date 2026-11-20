@@ -57,15 +57,16 @@ class InfoParserTest {
         val labels = options.map { "${it.height}p${it.fps}-${it.container}-${it.isHdr}" }
         assertEquals(
             listOf(
-                "2160p60-WEBM-true",
+                "2160p60-MP4-true",
                 "1080p30-MP4-false",
                 "720p60-MP4-false",
                 "720p30-MP4-false",
-                "720p30-WEBM-false",
                 "360p30-MP4-false",
             ),
             labels,
         )
+        // A igual altura se prefiere el MP4 nativo (136) al WebM (247).
+        assertEquals("136", options.first { it.height == 720 && it.fps == 30 }.formatId)
         // Entre dos 1080p MP4 se elige la de mayor tasa de bits.
         assertEquals("137", options.first { it.height == 1080 }.formatId)
     }
@@ -84,15 +85,29 @@ class InfoParserTest {
     }
 
     @Test
-    fun `ofrece MP3, M4A y OPUS con tamaños estimados`() {
+    fun `ofrece solo MP3, de mejor a peor, con tamaños estimados`() {
         val audio = (parse(videoJson) as AnalysisResult.Single).info.audioOptions
         assertEquals(
-            listOf(AudioFormat.MP3_320, AudioFormat.MP3_192, AudioFormat.MP3_128, AudioFormat.M4A, AudioFormat.OPUS),
+            listOf(AudioFormat.MP3_320, AudioFormat.MP3_192, AudioFormat.MP3_128),
             audio.map { it.format },
         )
         assertEquals(100L * 320 * 125, audio.first { it.format == AudioFormat.MP3_320 }.estimatedBytes)
-        assertEquals(1_600_000L, audio.first { it.format == AudioFormat.M4A }.estimatedBytes)
-        assertEquals(1_500_000L, audio.first { it.format == AudioFormat.OPUS }.estimatedBytes)
+    }
+
+    @Test
+    fun `un video de solo 480p no ofrece calidades mayores ni WebM`() {
+        val json = """
+            {"id": "x", "title": "Viejo", "duration": 60, "formats": [
+              {"format_id": "140", "ext": "m4a", "vcodec": "none", "acodec": "mp4a.40.2", "abr": 128},
+              {"format_id": "135", "ext": "mp4", "vcodec": "avc1", "acodec": "none", "height": 480, "fps": 30, "tbr": 600},
+              {"format_id": "244", "ext": "webm", "vcodec": "vp9", "acodec": "none", "height": 480, "fps": 30, "tbr": 500},
+              {"format_id": "133", "ext": "mp4", "vcodec": "avc1", "acodec": "none", "height": 240, "fps": 30, "tbr": 200}
+            ]}
+        """.trimIndent()
+        val options = (parse(json) as AnalysisResult.Single).info.videoOptions
+        assertEquals(listOf(480, 240), options.map { it.height })
+        assertEquals("135", options.first().formatId)
+        assertTrue(options.all { it.container == VideoContainer.MP4 })
     }
 
     @Test
@@ -144,7 +159,7 @@ class InfoParserTest {
             ).info
         val option = info.videoOptions.single()
         assertEquals(0, option.height)
-        assertEquals(VideoContainer.WEBM, option.container)
+        assertEquals(VideoContainer.MP4, option.container)
         assertTrue(option.hasAudio)
     }
 }

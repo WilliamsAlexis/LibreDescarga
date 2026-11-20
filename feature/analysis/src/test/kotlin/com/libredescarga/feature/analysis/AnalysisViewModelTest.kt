@@ -157,7 +157,7 @@ class AnalysisViewModelTest {
 
     private suspend fun downloadAudioTwice(viewModel: AnalysisViewModel) {
         viewModel.onTabSelected(MediaKind.AUDIO)
-        viewModel.onAudioSelected(AudioFormat.M4A)
+        viewModel.onAudioSelected(AudioFormat.MP3_192)
         viewModel.events.test {
             viewModel.onDownload()
             awaitItem()
@@ -224,7 +224,7 @@ class AnalysisViewModelTest {
     fun `descargar audio usa el titulo saneado como nombre`() = runTest {
         val viewModel = createViewModel()
         viewModel.onTabSelected(MediaKind.AUDIO)
-        viewModel.onAudioSelected(AudioFormat.M4A)
+        viewModel.onAudioSelected(AudioFormat.MP3_192)
 
         viewModel.events.test {
             viewModel.onDownload()
@@ -233,7 +233,7 @@ class AnalysisViewModelTest {
 
         val request = downloads.enqueued.single()
         assertEquals(MediaKind.AUDIO, request.kind)
-        assertEquals(AudioFormat.M4A, request.audioFormat)
+        assertEquals(AudioFormat.MP3_192, request.audioFormat)
         // El nombre propuesto es el título saneado (":" no está permitido en tarjetas SD).
         assertEquals("Concierto libre_ grabación pública", request.fileName)
         assertNull(request.subtitle)
@@ -263,7 +263,7 @@ class AnalysisViewModelTest {
 
         viewModel.onEntryToggled("v2")
         viewModel.onPlaylistKindSelected(MediaKind.AUDIO)
-        viewModel.onPlaylistAudioFormat(AudioFormat.OPUS)
+        viewModel.onPlaylistAudioFormat(AudioFormat.MP3_128)
 
         viewModel.events.test {
             viewModel.onDownloadPlaylist()
@@ -271,7 +271,7 @@ class AnalysisViewModelTest {
         }
 
         assertEquals(listOf("Pista 1", "Pista 3"), downloads.enqueued.map { it.title })
-        assertTrue(downloads.enqueued.all { it.audioFormat == AudioFormat.OPUS })
+        assertTrue(downloads.enqueued.all { it.audioFormat == AudioFormat.MP3_128 })
     }
 
     @Test
@@ -386,13 +386,13 @@ class AnalysisViewModelTest {
 
         viewModel.onVideoSelected(TestMedia.video720)
         viewModel.onTabSelected(MediaKind.AUDIO)
-        viewModel.onAudioSelected(AudioFormat.M4A)
+        viewModel.onAudioSelected(AudioFormat.MP3_192)
         gate.complete(Unit)
 
         val full = viewModel.single()
         assertEquals(720, full.selectedVideo?.height)
         assertEquals(MediaKind.AUDIO, full.tab)
-        assertEquals(AudioFormat.M4A, full.selectedAudio)
+        assertEquals(AudioFormat.MP3_192, full.selectedAudio)
         assertFalse(full.loadingMoreQualities)
     }
 

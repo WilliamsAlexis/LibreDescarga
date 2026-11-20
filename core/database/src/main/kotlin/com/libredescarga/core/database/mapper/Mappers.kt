@@ -33,7 +33,8 @@ fun DownloadEntity.toRequest(): DownloadRequest = DownloadRequest(
             formatHasAudio = videoFormatHasAudio,
         )
     },
-    audioFormat = enumOrNull<AudioFormat>(audioFormat),
+    // Las descargas antiguas en M4A u OPUS se reintentan como MP3 (esos formatos ya no se ofrecen).
+    audioFormat = enumOrNull<AudioFormat>(audioFormat) ?: audioFormat?.let { AudioFormat.MP3_320 },
     subtitle = subtitleLanguage?.let {
         SubtitleSelection(languageCode = it, isAutomatic = subtitleAutomatic, embed = subtitleEmbed)
     },

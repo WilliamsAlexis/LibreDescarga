@@ -9,8 +9,7 @@
     <string name="core_ui_quality_ask">Preguntar siempre</string>
     <string name="core_ui_quality_best">Mejor calidad</string>
     <string name="core_ui_audio_mp3">MP3 · %1$d kbps</string>
-    <string name="core_ui_audio_m4a">M4A (AAC)</string>
-    <string name="core_ui_audio_opus">OPUS</string>
+    <string name="core_ui_audio_mp3_best">MP3 · %1$d kbps · Mejor calidad</string>
 
     <!-- Errores -->
     <string name="core_ui_error_invalid_url">El enlace no es válido. Revisa que empiece por https://</string>

@@ -49,7 +49,7 @@ object DownloadCommandBuilder {
     private fun MutableList<String>.addVideoOptions(request: DownloadRequest) {
         val selection = requireNotNull(request.video) { "Falta la selección de video" }
         val container = selection.container.extension
-        val audioExt = if (selection.container == VideoContainer.WEBM) "webm" else "m4a"
+        val audioExt = "m4a"
         val height = selection.maxHeight
         val formatId = selection.formatId
 

@@ -16,6 +16,9 @@ import kotlinx.serialization.json.JsonObject
 object InfoParser {
 
     private const val NONE = "none"
+
+    /** A igual altura se prefiere el MP4 nativo (no hace falta convertirlo), aunque el WebM tenga algo más de bitrate. */
+    private const val MP4_BONUS = 100_000.0
     private val LIVE_STATUSES = setOf("is_live", "is_upcoming", "post_live")
 
     fun parse(json: JsonObject, requestedUrl: String): AnalysisResult =
@@ -81,7 +84,7 @@ object InfoParser {
             thumbnailUrl = json.thumbnailUrl(),
             extractor = json.string("extractor_key") ?: json.string("extractor") ?: "generic",
             videoOptions = buildVideoOptions(formats, bestAudio, duration),
-            audioOptions = buildAudioOptions(formats, audioOnly, bestAudio, duration),
+            audioOptions = buildAudioOptions(formats, duration),
             subtitles = buildSubtitles(json),
         )
     }
@@ -104,25 +107,24 @@ object InfoParser {
                 height = format.long("height")!!.toInt(),
                 fps = format.double("fps")?.let { kotlin.math.round(it).toInt() },
                 isHdr = format.string("dynamic_range")?.let { it != "SDR" } ?: false,
-                container = if (format.string("ext") == "webm") VideoContainer.WEBM else VideoContainer.MP4,
+                container = VideoContainer.MP4,
                 hasAudio = hasAudio,
                 estimatedBytes = when {
                     ownBytes == null -> null
                     hasAudio || bestAudioBytes == null -> ownBytes
                     else -> ownBytes + bestAudioBytes
                 },
-            ).let { it to format.score() }
+            ).let { it to format.score() + (if (format.string("ext") == "mp4") MP4_BONUS else 0.0) }
         }
-            // Una opción por altura + fps (30/60) + HDR + contenedor: la de mayor calidad.
+            // Una opción por altura + fps (30/60) + HDR: prefiere el formato MP4 nativo y, si no hay, el de mayor calidad.
             .groupBy { (option, _) ->
-                listOf(option.height, if ((option.fps ?: 30) >= 48) 60 else 30, option.isHdr, option.container)
+                listOf(option.height, if ((option.fps ?: 30) >= 48) 60 else 30, option.isHdr)
             }
             .map { (_, group) -> group.maxBy { it.second }.first }
             .sortedWith(
                 compareByDescending<VideoOption> { it.height }
                     .thenByDescending { it.fps ?: 0 }
-                    .thenBy { it.isHdr }
-                    .thenBy { it.container.ordinal },
+                    .thenBy { it.isHdr },
             )
 
         if (options.isNotEmpty()) return options
@@ -136,7 +138,7 @@ object InfoParser {
                 height = 0,
                 fps = null,
                 isHdr = false,
-                container = if (best.string("ext") == "webm") VideoContainer.WEBM else VideoContainer.MP4,
+                container = VideoContainer.MP4,
                 hasAudio = best.hasAudio(),
                 estimatedBytes = best.estimatedBytes(duration),
             ),
@@ -145,33 +147,19 @@ object InfoParser {
 
     private fun buildAudioOptions(
         formats: List<JsonObject>,
-        audioOnly: List<JsonObject>,
-        bestAudio: JsonObject?,
         duration: Long?,
     ): List<AudioOption> {
         if (formats.none { it.hasAudio() }) return emptyList()
-        val bestAudioBytes = bestAudio?.estimatedBytes(duration)
-
         fun mp3(format: AudioFormat) = AudioOption(
             format = format,
             estimatedBytes = duration?.let { it * format.bitrateKbps!! * 125 },
         )
 
-        val m4aBytes = audioOnly
-            .filter { it.string("ext") == "m4a" || it.string("acodec")?.startsWith("mp4a") == true }
-            .maxByOrNull { it.score() }
-            ?.estimatedBytes(duration) ?: bestAudioBytes
-        val opusBytes = audioOnly
-            .filter { it.string("acodec")?.contains("opus") == true }
-            .maxByOrNull { it.score() }
-            ?.estimatedBytes(duration) ?: bestAudioBytes
-
+        // Solo MP3, de mayor a menor calidad (la primera, 320 kbps, es la mejor).
         return listOf(
             mp3(AudioFormat.MP3_320),
             mp3(AudioFormat.MP3_192),
             mp3(AudioFormat.MP3_128),
-            AudioOption(AudioFormat.M4A, m4aBytes),
-            AudioOption(AudioFormat.OPUS, opusBytes),
         )
     }
 

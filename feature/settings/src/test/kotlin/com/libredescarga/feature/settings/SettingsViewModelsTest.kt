@@ -58,7 +58,7 @@ class SettingsViewModelsTest {
         viewModel.onWifiOnly(true)
         viewModel.onMaxConcurrent(4)
         viewModel.onVideoQuality(VideoQuality.P1080)
-        viewModel.onAudioFormat(AudioFormat.OPUS)
+        viewModel.onAudioFormat(AudioFormat.MP3_128)
         viewModel.onHideDonationReminders(true)
 
         val settings = viewModel.uiState.value.settings
@@ -69,7 +69,7 @@ class SettingsViewModelsTest {
         assertTrue(settings.wifiOnly)
         assertEquals(4, settings.maxConcurrentDownloads)
         assertEquals(VideoQuality.P1080, settings.defaultVideoQuality)
-        assertEquals(AudioFormat.OPUS, settings.defaultAudioFormat)
+        assertEquals(AudioFormat.MP3_128, settings.defaultAudioFormat)
         assertTrue(settings.hideDonationReminders)
     }
 
