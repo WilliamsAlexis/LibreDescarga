@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -65,6 +67,7 @@ fun MediaAnalysisSheet(
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val duplicatePrompt by viewModel.duplicatePrompt.collectAsStateWithLifecycle()
     // Diagnóstico: tiempo desde que se crea la hoja hasta que se compone cada contenido (cargando, formatos, error).
     val sheetStart = remember(url) {
         AnalisisPerf.mark("UI: hoja de análisis creada", AnalisisPerf.hostOf(url))
@@ -100,6 +103,37 @@ fun MediaAnalysisSheet(
     }
 
     val requireStorage = rememberLegacyStorageGate()
+
+    duplicatePrompt?.let { prompt ->
+        val titles = prompt.duplicateTitles
+        AlertDialog(
+            onDismissRequest = viewModel::onDuplicateDismissed,
+            title = { Text(stringResource(R.string.analysis_duplicate_title)) },
+            text = {
+                Text(
+                    if (titles.size == 1) {
+                        stringResource(R.string.analysis_duplicate_message_one, titles.first())
+                    } else {
+                        stringResource(
+                            R.string.analysis_duplicate_message_many,
+                            titles.size,
+                            titles.take(3).joinToString("\n") { "• $it" },
+                        )
+                    },
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::onDuplicateConfirmed) {
+                    Text(stringResource(R.string.analysis_duplicate_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onDuplicateDismissed) {
+                    Text(stringResource(R.string.analysis_duplicate_cancel))
+                }
+            },
+        )
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

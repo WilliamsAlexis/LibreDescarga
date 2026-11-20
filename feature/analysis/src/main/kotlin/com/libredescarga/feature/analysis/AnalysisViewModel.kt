@@ -11,6 +11,7 @@ import com.libredescarga.core.domain.usecase.AnalyzeUrlUseCase
 import com.libredescarga.core.domain.usecase.DownloadRequestFactory
 import com.libredescarga.core.domain.usecase.DownloadRequestFactory.toEntry
 import com.libredescarga.core.domain.usecase.EnqueueDownloadsUseCase
+import com.libredescarga.core.domain.usecase.FindDuplicateDownloadsUseCase
 import com.libredescarga.core.domain.usecase.ImageDownloads
 import com.libredescarga.core.domain.usecase.QualityPresets
 import com.libredescarga.core.model.AnalisisPerf
@@ -60,6 +61,8 @@ class AnalysisViewModel @AssistedInject constructor(
     private val analyzeUrl: AnalyzeUrlUseCase,
     // Agrega las descargas a la cola.
     private val enqueueDownloads: EnqueueDownloadsUseCase,
+    // Detecta lo que ya se descargó para avisar antes de repetirlo.
+    private val findDuplicates: FindDuplicateDownloadsUseCase,
     // Preferencias del usuario (calidad y formato por defecto).
     private val preferences: UserPreferencesRepository,
     // Espacio libre del teléfono, para avisar si es poco.
@@ -81,6 +84,10 @@ class AnalysisViewModel @AssistedInject constructor(
     // Eventos de una sola vez (cerrar la hoja, avisar...).
     private val _events = Channel<AnalysisEvent>(Channel.BUFFERED)
     val events: Flow<AnalysisEvent> = _events.receiveAsFlow()
+
+    // Aviso de "ya descargaste esto": mientras no es null se muestra el diálogo de confirmación.
+    private val _duplicatePrompt = MutableStateFlow<DuplicatePrompt?>(null)
+    val duplicatePrompt: StateFlow<DuplicatePrompt?> = _duplicatePrompt.asStateFlow()
 
     // Análisis en curso (se cancela al reintentar). Debe declararse antes de `init`, que ya llama a load().
     private var loadJob: Job? = null
@@ -300,12 +307,18 @@ class AnalysisViewModel @AssistedInject constructor(
     // --- Interno -----------------------------------------------------------------------
 
     // Manda las descargas a la cola y avisa el resultado; mientras tanto los botones quedan desactivados.
+    // Si alguna ya se había descargado, primero pregunta al usuario (ver onDuplicateConfirmed).
     private fun submit(buildRequests: () -> List<DownloadRequest>) {
         setSubmitting(true)
         viewModelScope.launch {
             try {
-                val count = enqueueDownloads(buildRequests())
-                _events.send(AnalysisEvent.Queued(count))
+                val requests = buildRequests()
+                val duplicates = findDuplicates(requests)
+                if (duplicates.isEmpty()) {
+                    _events.send(AnalysisEvent.Queued(enqueueDownloads(requests)))
+                } else {
+                    _duplicatePrompt.value = DuplicatePrompt(requests, duplicates.map { it.title })
+                }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
@@ -314,6 +327,29 @@ class AnalysisViewModel @AssistedInject constructor(
                 setSubmitting(false)
             }
         }
+    }
+
+    // El usuario decidió descargar de nuevo lo que ya tenía.
+    fun onDuplicateConfirmed() {
+        val prompt = _duplicatePrompt.value ?: return
+        _duplicatePrompt.value = null
+        setSubmitting(true)
+        viewModelScope.launch {
+            try {
+                _events.send(AnalysisEvent.Queued(enqueueDownloads(prompt.requests)))
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _events.send(AnalysisEvent.Failed(error as? MediaError ?: MediaError.Unknown(error.message)))
+            } finally {
+                setSubmitting(false)
+            }
+        }
+    }
+
+    // El usuario prefirió no repetir la descarga: todo queda como estaba.
+    fun onDuplicateDismissed() {
+        _duplicatePrompt.value = null
     }
 
     // Marca si hay un envío en curso (para desactivar los botones).

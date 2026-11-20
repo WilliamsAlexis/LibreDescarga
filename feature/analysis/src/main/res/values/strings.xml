@@ -2,6 +2,11 @@
 <resources>
     <string name="analysis_loading_more">Buscando más calidades… %1$d %%</string>
     <string name="analysis_loading_percent">Analizando enlace… %1$d %%</string>
+    <string name="analysis_duplicate_title">Ya lo descargaste</string>
+    <string name="analysis_duplicate_message_one">«%1$s» ya fue descargado antes. ¿Quieres descargarlo nuevamente?</string>
+    <string name="analysis_duplicate_message_many">%1$d elementos ya fueron descargados antes:\n%2$s\n¿Quieres descargarlos nuevamente?</string>
+    <string name="analysis_duplicate_confirm">Descargar de nuevo</string>
+    <string name="analysis_duplicate_cancel">Cancelar</string>
     <string name="analysis_close">Cerrar</string>
     <string name="analysis_retry">Reintentar</string>
     <string name="analysis_tab_video">Video</string>

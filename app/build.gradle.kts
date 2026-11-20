@@ -12,8 +12,8 @@ plugins {
 // (El nombre visible se cambia en src/main/res/values/strings.xml â†’ app_name.)
 // ---------------------------------------------------------------------------
 val appPackage = "com.libredescarga.app"
-val appVersionCode = 11
-val appVersionName = "1.1.0"
+val appVersionCode = 12
+val appVersionName = "1.2.0"
 
 // Datos de firma, fuera del control de versiones (ver keystore.properties.example).
 val keystoreProperties = Properties().apply {

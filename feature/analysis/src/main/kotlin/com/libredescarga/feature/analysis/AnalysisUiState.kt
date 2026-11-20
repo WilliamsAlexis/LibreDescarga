@@ -1,6 +1,7 @@
 package com.libredescarga.feature.analysis
 
 import com.libredescarga.core.model.AudioFormat
+import com.libredescarga.core.model.DownloadRequest
 import com.libredescarga.core.model.LinkPreview
 import com.libredescarga.core.model.MediaError
 import com.libredescarga.core.model.MediaInfo
@@ -78,6 +79,15 @@ sealed interface AnalysisUiState {
         val canDownload: Boolean get() = selectedIds.isNotEmpty() && !isSubmitting
     }
 }
+
+/**
+ * Descargas pendientes de confirmar porque ya se habían descargado.
+ * [requests] es todo lo que se iba a descargar; [duplicateTitles] los títulos repetidos.
+ */
+data class DuplicatePrompt(
+    val requests: List<DownloadRequest>,
+    val duplicateTitles: List<String>,
+)
 
 sealed interface AnalysisEvent {
     data class Queued(val count: Int) : AnalysisEvent

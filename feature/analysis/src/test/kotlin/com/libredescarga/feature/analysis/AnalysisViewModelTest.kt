@@ -3,6 +3,7 @@ package com.libredescarga.feature.analysis
 import app.cash.turbine.test
 import com.libredescarga.core.domain.usecase.AnalyzeUrlUseCase
 import com.libredescarga.core.domain.usecase.EnqueueDownloadsUseCase
+import com.libredescarga.core.domain.usecase.FindDuplicateDownloadsUseCase
 import com.libredescarga.core.model.AnalysisResult
 import com.libredescarga.core.model.AnalysisUpdate
 import com.libredescarga.core.model.AudioFormat
@@ -43,6 +44,7 @@ class AnalysisViewModelTest {
         url = url,
         analyzeUrl = AnalyzeUrlUseCase(FakeBlocklistRepository(setOf("bloqueado.com")), extractor),
         enqueueDownloads = EnqueueDownloadsUseCase(downloads),
+        findDuplicates = FindDuplicateDownloadsUseCase(downloads),
         preferences = preferences,
         storage = storage,
         pageImages = pageImages,
@@ -151,6 +153,71 @@ class AnalysisViewModelTest {
         assertEquals(MediaKind.VIDEO, request.kind)
         assertEquals("22", request.video?.formatId)
         assertTrue(request.video!!.formatHasAudio)
+    }
+
+    private suspend fun downloadAudioTwice(viewModel: AnalysisViewModel) {
+        viewModel.onTabSelected(MediaKind.AUDIO)
+        viewModel.onAudioSelected(AudioFormat.M4A)
+        viewModel.events.test {
+            viewModel.onDownload()
+            awaitItem()
+        }
+        downloads.setTasks(downloads.current.map { it.copy(status = com.libredescarga.core.model.DownloadStatus.COMPLETED) })
+    }
+
+    @Test
+    fun `una descarga ya hecha pregunta antes de repetirse y no se encola`() = runTest {
+        val viewModel = createViewModel()
+        downloadAudioTwice(viewModel)
+
+        viewModel.onDownload()
+
+        val prompt = viewModel.duplicatePrompt.value
+        assertEquals(listOf(TestMedia.info.title), prompt?.duplicateTitles)
+        assertEquals(1, downloads.enqueued.size)
+        assertFalse((viewModel.uiState.value as AnalysisUiState.Single).isSubmitting)
+    }
+
+    @Test
+    fun `confirmar el aviso descarga de nuevo`() = runTest {
+        val viewModel = createViewModel()
+        downloadAudioTwice(viewModel)
+        viewModel.onDownload()
+
+        viewModel.events.test {
+            viewModel.onDuplicateConfirmed()
+            assertEquals(AnalysisEvent.Queued(1), awaitItem())
+        }
+
+        assertNull(viewModel.duplicatePrompt.value)
+        assertEquals(2, downloads.enqueued.size)
+    }
+
+    @Test
+    fun `cancelar el aviso no descarga nada`() = runTest {
+        val viewModel = createViewModel()
+        downloadAudioTwice(viewModel)
+        viewModel.onDownload()
+
+        viewModel.onDuplicateDismissed()
+
+        assertNull(viewModel.duplicatePrompt.value)
+        assertEquals(1, downloads.enqueued.size)
+    }
+
+    @Test
+    fun `el video del mismo enlace no es duplicado del audio`() = runTest {
+        val viewModel = createViewModel()
+        downloadAudioTwice(viewModel)
+        viewModel.onTabSelected(MediaKind.VIDEO)
+
+        viewModel.events.test {
+            viewModel.onDownload()
+            assertEquals(AnalysisEvent.Queued(1), awaitItem())
+        }
+
+        assertNull(viewModel.duplicatePrompt.value)
+        assertEquals(2, downloads.enqueued.size)
     }
 
     @Test
